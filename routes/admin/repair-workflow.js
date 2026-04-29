@@ -59,7 +59,7 @@ router.get('/admin/api/repairs/:id/parts', async (req, res) => {
   try {
     const { rows } = await pool.query(
       `SELECT rp.*, i.name as part_name, i.sku FROM repair_parts rp
-       JOIN inventory i ON rp.inventory_id = i.id WHERE rp.repair_id = $1 ORDER BY rp.created_at`,
+       JOIN inventory_parts i ON rp.inventory_id = i.id WHERE rp.repair_id = $1 ORDER BY rp.created_at`,
       [req.params.id]
     );
     res.json(rows);
@@ -70,12 +70,12 @@ router.post('/admin/api/repairs/:id/parts', async (req, res) => {
   try {
     const { inventory_id, quantity } = req.body;
     // Get cost and decrement inventory
-    const inv = await pool.query('SELECT * FROM inventory WHERE id=$1', [inventory_id]);
+    const inv = await pool.query('SELECT * FROM inventory_parts WHERE id=$1', [inventory_id]);
     if (!inv.rows[0]) return res.status(404).json({ error: 'Part not found' });
     if (inv.rows[0].quantity < quantity) return res.status(400).json({ error: 'Insufficient stock' });
     
     const cost = inv.rows[0].sell_price || inv.rows[0].unit_cost || 0;
-    await pool.query('UPDATE inventory SET quantity = quantity - $1 WHERE id = $2', [quantity, inventory_id]);
+    await pool.query('UPDATE inventory_parts SET quantity = quantity - $1 WHERE id = $2', [quantity, inventory_id]);
     
     const { rows } = await pool.query(
       `INSERT INTO repair_parts (repair_id, inventory_id, quantity, unit_cost)

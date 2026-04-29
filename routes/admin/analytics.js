@@ -153,15 +153,15 @@ router.get('/admin/api/analytics/customers', async (req, res) => {
 router.get('/admin/api/analytics/inventory', async (req, res) => {
   try {
     const [lowStock, topSelling, valuation] = await Promise.all([
-      pool.query(`SELECT * FROM inventory WHERE quantity <= COALESCE(reorder_point, 3) ORDER BY quantity ASC LIMIT 10`),
+      pool.query(`SELECT * FROM inventory_parts WHERE quantity <= COALESCE(low_stock_threshold, 3) ORDER BY quantity ASC LIMIT 10`),
       pool.query(
         `SELECT i.name, i.sku, SUM(rp.quantity) as units_used
-         FROM repair_parts rp JOIN inventory i ON rp.inventory_id = i.id
+         FROM repair_parts rp JOIN inventory_parts i ON rp.inventory_id = i.id
          WHERE rp.created_at >= NOW() - INTERVAL '30 days'
          GROUP BY i.id, i.name, i.sku ORDER BY units_used DESC LIMIT 10`
       ),
       pool.query(`SELECT COUNT(*) as total_items, SUM(quantity) as total_units,
-                  SUM(quantity * COALESCE(unit_cost, 0)) as total_value FROM inventory`)
+                  SUM(quantity * COALESCE(unit_cost, 0)) as total_value FROM inventory_parts`)
     ]);
     
     res.json({

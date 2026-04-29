@@ -188,11 +188,10 @@ CREATE TABLE IF NOT EXISTS tech_availability (
 -- INVENTORY ENHANCEMENTS
 -- ════════════════════════════════════════════════════════════════════════════
 
-ALTER TABLE inventory ADD COLUMN IF NOT EXISTS barcode VARCHAR(100);
-ALTER TABLE inventory ADD COLUMN IF NOT EXISTS location VARCHAR(100) DEFAULT 'Main';
-ALTER TABLE inventory ADD COLUMN IF NOT EXISTS last_cost DECIMAL(10,2);
-ALTER TABLE inventory ADD COLUMN IF NOT EXISTS avg_cost DECIMAL(10,2);
-ALTER TABLE inventory ADD COLUMN IF NOT EXISTS warranty_months INTEGER DEFAULT 0;
+ALTER TABLE inventory_parts ADD COLUMN IF NOT EXISTS barcode VARCHAR(100);
+ALTER TABLE inventory_parts ADD COLUMN IF NOT EXISTS last_cost DECIMAL(10,2);
+ALTER TABLE inventory_parts ADD COLUMN IF NOT EXISTS avg_cost DECIMAL(10,2);
+ALTER TABLE inventory_parts ADD COLUMN IF NOT EXISTS warranty_months INTEGER DEFAULT 0;
 
 CREATE TABLE IF NOT EXISTS inventory_movements (
   id SERIAL PRIMARY KEY,

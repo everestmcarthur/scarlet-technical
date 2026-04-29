@@ -140,7 +140,7 @@ router.post('/admin/api/inventory/:id/movements', async (req, res) => {
     );
     // Update inventory quantity
     const adjustment = ['purchase', 'return'].includes(movement_type) ? quantity : -quantity;
-    await pool.query('UPDATE inventory SET quantity = quantity + $1 WHERE id = $2', [adjustment, req.params.id]);
+    await pool.query('UPDATE inventory_parts SET quantity = quantity + $1 WHERE id = $2', [adjustment, req.params.id]);
     
     res.json(rows[0]);
   } catch (e) { res.status(500).json({ error: e.message }); }
