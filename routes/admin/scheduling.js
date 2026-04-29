@@ -61,7 +61,7 @@ router.get('/admin/api/wait-estimate', async (req, res) => {
     );
     const avgTime = await pool.query(
       `SELECT AVG(EXTRACT(EPOCH FROM (updated_at - created_at))/60) as avg_minutes
-       FROM walkin_queue WHERE status='completed' AND created_at >= CURRENT_DATE`
+       FROM walkin_queue WHERE status='completed' AND checked_in_at >= CURRENT_DATE`
     );
     const waitingCount = parseInt(queue.rows[0].waiting);
     const avgMinutes = parseFloat(avgTime.rows[0].avg_minutes) || 15;
