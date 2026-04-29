@@ -366,6 +366,21 @@ input, select, textarea { font-family: inherit; }
 .card-header h3 { font-size: 14px; font-weight: 600; color: var(--gray-800); }
 .card-body { padding: 20px; }
 
+/* ===== V3.0 NEW COMPONENTS ===== */
+.tabs-row { display: flex; gap: 4px; border-bottom: 2px solid var(--gray-200); padding-bottom: 0; }
+.tab-btn { background: none; border: none; padding: 8px 16px; font-size: 13px; font-weight: 500; color: var(--gray-500); border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .15s; }
+.tab-btn:hover { color: var(--gray-800); }
+.tab-btn.active { color: var(--scarlet); border-bottom-color: var(--scarlet); font-weight: 600; }
+.grid-2col { display: grid; grid-template-columns: 1fr 1fr; }
+.grid-4col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+@media (max-width: 768px) {
+  .grid-2col { grid-template-columns: 1fr; }
+  .grid-4col { grid-template-columns: repeat(2, 1fr); }
+  .tabs-row { overflow-x: auto; flex-wrap: nowrap; }
+}
+.list-item { transition: background .15s; }
+.list-item:hover { background: var(--gray-50); }
+
 /* ===== MODALS ===== */
 #modal-overlay {
   display: none;
@@ -842,6 +857,40 @@ select.form-control {
       <button class="nav-item" data-tab="settings">
         <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
         Settings
+      </button>
+      <div class="nav-label" style="margin-top:8px">Communication</div>
+      <button class="nav-item" data-tab="sms-center">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        SMS Center
+      </button>
+      <button class="nav-item" data-tab="email-center">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        Email Center
+      </button>
+      <button class="nav-item" data-tab="knowledge-base">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        Knowledge Base
+      </button>
+      <div class="nav-label" style="margin-top:8px">Business</div>
+      <button class="nav-item" data-tab="coupons">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+        Coupons
+      </button>
+      <button class="nav-item" data-tab="expenses">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Expenses
+      </button>
+      <button class="nav-item" data-tab="suppliers">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        Suppliers & POs
+      </button>
+      <button class="nav-item" data-tab="timeclock">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Time Clock
+      </button>
+      <button class="nav-item" data-tab="walkin-queue">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Walk-in Queue
       </button>
     </nav>
     <div id="sidebar-footer">
@@ -1775,6 +1824,161 @@ select.form-control {
         <div id="tiers-list" class="card"><div class="empty-state"><p>Loading tiers…</p></div></div>
       </div>
 
+      <!-- ══ SMS CENTER TAB ═══════════════════════════════════════════════════ -->
+      <div id="tab-sms-center" class="tab-panel">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">SMS Center</h2>
+            <p class="section-sub">View conversations, send messages, manage campaigns — (877) 239-9667</p>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-sm" onclick="loadSMSCenter()" title="Refresh">↻ Refresh</button>
+            <button class="btn btn-primary btn-sm" onclick="openBulkSMSModal()">📢 Bulk SMS</button>
+          </div>
+        </div>
+        <div class="tabs-row" style="margin-bottom:16px;">
+          <button class="tab-btn active" onclick="smsSwitchView('conversations', this)">💬 Conversations</button>
+          <button class="tab-btn" onclick="smsSwitchView('campaigns', this)">📢 Campaigns</button>
+          <button class="tab-btn" onclick="smsSwitchView('preferences', this)">⚙️ Preferences</button>
+        </div>
+        <div id="sms-conversations-view">
+          <div class="grid-2col" style="gap:16px;">
+            <div class="card" id="sms-thread-list" style="max-height:600px;overflow-y:auto;">
+              <div class="empty-state"><p>Loading conversations…</p></div>
+            </div>
+            <div class="card" id="sms-thread-detail" style="max-height:600px;overflow-y:auto;">
+              <div class="empty-state"><p>Select a conversation</p></div>
+            </div>
+          </div>
+        </div>
+        <div id="sms-campaigns-view" style="display:none;">
+          <div class="card" id="sms-campaigns-list"><div class="empty-state"><p>Loading campaigns…</p></div></div>
+        </div>
+        <div id="sms-preferences-view" style="display:none;">
+          <div class="card" id="sms-prefs-list"><div class="empty-state"><p>Loading preferences…</p></div></div>
+        </div>
+      </div>
+
+      <!-- ══ EMAIL CENTER TAB ════════════════════════════════════════════════ -->
+      <div id="tab-email-center" class="tab-panel">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Email Center</h2>
+            <p class="section-sub">Templates, campaigns, sequences — noreply@jarviscli.dev</p>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-primary btn-sm" onclick="openComposeEmailModal()">✉️ Compose</button>
+          </div>
+        </div>
+        <div class="tabs-row" style="margin-bottom:16px;">
+          <button class="tab-btn active" onclick="emailSwitchView('templates', this)">📝 Templates</button>
+          <button class="tab-btn" onclick="emailSwitchView('log', this)">📤 Send Log</button>
+          <button class="tab-btn" onclick="emailSwitchView('sequences', this)">🔄 Sequences</button>
+        </div>
+        <div id="email-templates-view">
+          <div class="card" id="email-templates-list"><div class="empty-state"><p>Loading templates…</p></div></div>
+        </div>
+        <div id="email-log-view" style="display:none;">
+          <div class="card" id="email-log-list"><div class="empty-state"><p>Loading email log…</p></div></div>
+        </div>
+        <div id="email-sequences-view" style="display:none;">
+          <div class="card" id="email-sequences-list"><div class="empty-state"><p>Loading sequences…</p></div></div>
+        </div>
+      </div>
+
+      <!-- ══ KNOWLEDGE BASE TAB ══════════════════════════════════════════════ -->
+      <div id="tab-knowledge-base" class="tab-panel">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Knowledge Base</h2>
+            <p class="section-sub">Help articles for customers & internal guides for staff</p>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openNewKBArticleModal()">+ New Article</button>
+        </div>
+        <div class="card" id="kb-articles-list"><div class="empty-state"><p>Loading articles…</p></div></div>
+      </div>
+
+      <!-- ══ COUPONS TAB ═════════════════════════════════════════════════════ -->
+      <div id="tab-coupons" class="tab-panel">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Coupons & Discounts</h2>
+            <p class="section-sub">Create promo codes, track usage, manage discounts</p>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="openNewCouponModal()">+ New Coupon</button>
+        </div>
+        <div class="card" id="coupons-list"><div class="empty-state"><p>Loading coupons…</p></div></div>
+      </div>
+
+      <!-- ══ EXPENSES TAB ════════════════════════════════════════════════════ -->
+      <div id="tab-expenses" class="tab-panel">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Expense Tracking</h2>
+            <p class="section-sub">Track business expenses, view totals by category</p>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <input type="month" id="expense-month" onchange="loadExpenses()" style="padding:6px 10px;border:1px solid var(--gray-200);border-radius:var(--radius-sm);" />
+            <button class="btn btn-primary btn-sm" onclick="openNewExpenseModal()">+ Add Expense</button>
+          </div>
+        </div>
+        <div class="grid-4col" id="expense-totals" style="margin-bottom:16px;"></div>
+        <div class="card" id="expenses-list"><div class="empty-state"><p>Loading expenses…</p></div></div>
+      </div>
+
+      <!-- ══ SUPPLIERS & PURCHASE ORDERS TAB ═════════════════════════════════ -->
+      <div id="tab-suppliers" class="tab-panel">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Suppliers & Purchase Orders</h2>
+            <p class="section-sub">Manage vendors and track orders</p>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-sm" onclick="openNewSupplierModal()">+ Supplier</button>
+            <button class="btn btn-primary btn-sm" onclick="openNewPOModal()">+ Purchase Order</button>
+          </div>
+        </div>
+        <div class="tabs-row" style="margin-bottom:16px;">
+          <button class="tab-btn active" onclick="supplierSwitchView('suppliers', this)">🏭 Suppliers</button>
+          <button class="tab-btn" onclick="supplierSwitchView('orders', this)">📦 Purchase Orders</button>
+        </div>
+        <div id="suppliers-list-view">
+          <div class="card" id="suppliers-list"><div class="empty-state"><p>Loading suppliers…</p></div></div>
+        </div>
+        <div id="purchase-orders-view" style="display:none;">
+          <div class="card" id="po-list"><div class="empty-state"><p>Loading purchase orders…</p></div></div>
+        </div>
+      </div>
+
+      <!-- ══ TIME CLOCK TAB ══════════════════════════════════════════════════ -->
+      <div id="tab-timeclock" class="tab-panel">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Time Clock</h2>
+            <p class="section-sub">Track employee hours, clock in/out</p>
+          </div>
+        </div>
+        <div class="card" style="text-align:center;padding:32px;margin-bottom:16px;" id="timeclock-status">
+          <div class="empty-state"><p>Loading time clock…</p></div>
+        </div>
+        <div class="card" id="timeclock-history"><div class="empty-state"><p>Loading history…</p></div></div>
+      </div>
+
+      <!-- ══ WALK-IN QUEUE TAB ═══════════════════════════════════════════════ -->
+      <div id="tab-walkin-queue" class="tab-panel">
+        <div class="section-header">
+          <div>
+            <h2 class="section-title">Walk-in Queue</h2>
+            <p class="section-sub">Manage in-store customer queue</p>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span id="queue-avg-wait" class="badge badge-blue" style="font-size:13px;"></span>
+            <button class="btn btn-primary btn-sm" onclick="openAddToQueueModal()">+ Add to Queue</button>
+          </div>
+        </div>
+        <div class="card" id="walkin-queue-list"><div class="empty-state"><p>Loading queue…</p></div></div>
+      </div>
+
     </main>
   </div>
 </div>
@@ -1935,6 +2139,14 @@ const tabTitles = {
   maintenance: 'Maintenance Contracts',
   tiers: 'Service Tiers',
   settings: 'Settings & Tools',
+  'sms-center': 'SMS Center',
+  'email-center': 'Email Center',
+  'knowledge-base': 'Knowledge Base',
+  coupons: 'Coupons & Discounts',
+  expenses: 'Expense Tracking',
+  suppliers: 'Suppliers & Purchase Orders',
+  timeclock: 'Time Clock',
+  'walkin-queue': 'Walk-in Queue',
 };
 function switchTab(tab) {
   state.currentTab = tab;
@@ -1969,6 +2181,14 @@ function loadTab(tab) {
   else if (tab === 'maintenance') loadMaintenance();
   else if (tab === 'tiers') loadTiers();
   else if (tab === 'settings') loadSettings();
+  else if (tab === 'sms-center') loadSMSCenter();
+  else if (tab === 'email-center') loadEmailCenter();
+  else if (tab === 'knowledge-base') loadKnowledgeBase();
+  else if (tab === 'coupons') loadCoupons();
+  else if (tab === 'expenses') loadExpenses();
+  else if (tab === 'suppliers') loadSuppliers();
+  else if (tab === 'timeclock') loadTimeClock();
+  else if (tab === 'walkin-queue') loadWalkinQueue();
 }
 
 /* ===== DASHBOARD ===== */
@@ -6377,6 +6597,694 @@ async function loadWarrantyExpiring() {
     <span style="margin-left:8px;color:var(--gray-500)">Repair #${rep.id}</span></div>
     <div style="color:var(--yellow);font-weight:600">Expires ${new Date(rep.warranty_expires_at).toLocaleDateString()}</div>
   </div>`).join('');
+}
+
+/* ===================================================================
+   V3.0 NEW FEATURE FUNCTIONS — SMS, Email, KB, Coupons, Expenses,
+   Suppliers, Time Clock, Walk-in Queue
+   =================================================================== */
+
+// ─── Helper: sub-tab switching ──────────────────────────────────────────────
+function subTabSwitch(containerId, viewId, btn) {
+  const parent = btn.closest('.tabs-row');
+  parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const panel = document.getElementById(`tab-${state.currentTab}`);
+  panel.querySelectorAll('[id$="-view"]').forEach(v => {
+    if (v.closest('.tab-panel') === panel) v.style.display = 'none';
+  });
+  document.getElementById(viewId).style.display = '';
+}
+function smsSwitchView(view, btn) {
+  const parent = btn.closest('.tabs-row');
+  parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('sms-conversations-view').style.display = view === 'conversations' ? '' : 'none';
+  document.getElementById('sms-campaigns-view').style.display = view === 'campaigns' ? '' : 'none';
+  document.getElementById('sms-preferences-view').style.display = view === 'preferences' ? '' : 'none';
+}
+function emailSwitchView(view, btn) {
+  const parent = btn.closest('.tabs-row');
+  parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('email-templates-view').style.display = view === 'templates' ? '' : 'none';
+  document.getElementById('email-log-view').style.display = view === 'log' ? '' : 'none';
+  document.getElementById('email-sequences-view').style.display = view === 'sequences' ? '' : 'none';
+}
+function supplierSwitchView(view, btn) {
+  const parent = btn.closest('.tabs-row');
+  parent.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('suppliers-list-view').style.display = view === 'suppliers' ? '' : 'none';
+  document.getElementById('purchase-orders-view').style.display = view === 'orders' ? '' : 'none';
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SMS CENTER
+// ═══════════════════════════════════════════════════════════════════════════
+async function loadSMSCenter() {
+  const list = document.getElementById('sms-thread-list');
+  list.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const r = await api('GET', '/api/sms/conversations');
+    if (!r || !Array.isArray(r)) { list.innerHTML = '<div class="empty-state"><p>No SMS conversations yet</p></div>'; return; }
+    if (r.length === 0) { list.innerHTML = '<div class="empty-state"><p>No SMS conversations yet. Messages will appear when customers text (877) 239-9667</p></div>'; return; }
+    list.innerHTML = r.map(c => `
+      <div class="list-item" style="padding:12px;cursor:pointer;border-bottom:1px solid var(--gray-100);" onclick="loadSMSThread('${esc(c.phone)}')">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div>
+            <strong style="font-size:14px;">${esc(c.customer_name || c.phone)}</strong>
+            <div style="color:var(--gray-500);font-size:12px;">${esc(c.phone)}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:11px;color:var(--gray-400);">${timeAgo(c.last_message_at)}</div>
+            ${c.unread ? '<span class="badge badge-red" style="font-size:10px;">NEW</span>' : ''}
+          </div>
+        </div>
+        <div style="color:var(--gray-500);font-size:12px;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(c.last_message || '')}</div>
+      </div>
+    `).join('');
+  } catch (err) {
+    list.innerHTML = '<div class="empty-state"><p>SMS Center ready — conversations will appear when customers text your number</p></div>';
+  }
+}
+
+async function loadSMSThread(phone) {
+  const detail = document.getElementById('sms-thread-detail');
+  detail.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const r = await api('GET', `/api/sms/conversations/${encodeURIComponent(phone)}`);
+    const msgs = Array.isArray(r) ? r : (r?.messages || []);
+    detail.innerHTML = `
+      <div style="padding:12px;border-bottom:1px solid var(--gray-200);font-weight:600;">${esc(phone)}</div>
+      <div id="sms-msg-list" style="padding:12px;max-height:420px;overflow-y:auto;">
+        ${msgs.map(m => `
+          <div style="margin-bottom:8px;display:flex;justify-content:${m.direction === 'outbound' ? 'flex-end' : 'flex-start'};">
+            <div style="max-width:80%;padding:8px 12px;border-radius:12px;font-size:13px;
+              background:${m.direction === 'outbound' ? 'var(--scarlet)' : 'var(--gray-100)'};
+              color:${m.direction === 'outbound' ? '#fff' : 'var(--gray-800)'};">
+              ${esc(m.body || m.message || '')}
+              <div style="font-size:10px;opacity:0.7;margin-top:4px;">${new Date(m.created_at).toLocaleTimeString()}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <div style="padding:12px;border-top:1px solid var(--gray-200);display:flex;gap:8px;">
+        <input id="sms-reply-input" placeholder="Type a reply…" style="flex:1;padding:8px 12px;border:1px solid var(--gray-200);border-radius:var(--radius);" onkeydown="if(event.key==='Enter')sendSMSReply('${esc(phone)}')" />
+        <button class="btn btn-primary btn-sm" onclick="sendSMSReply('${esc(phone)}')">Send</button>
+      </div>
+    `;
+    const msgList = document.getElementById('sms-msg-list');
+    if (msgList) msgList.scrollTop = msgList.scrollHeight;
+  } catch (err) {
+    detail.innerHTML = '<div class="empty-state"><p>Could not load conversation</p></div>';
+  }
+}
+
+async function sendSMSReply(phone) {
+  const input = document.getElementById('sms-reply-input');
+  const msg = input?.value?.trim();
+  if (!msg) return;
+  input.value = '';
+  const r = await api('POST', '/api/sms/send', { to: phone, message: msg });
+  if (r?.ok) {
+    showToast('SMS sent!');
+    loadSMSThread(phone);
+  } else {
+    showToast('Failed to send: ' + (r?.error || 'Unknown error'), 'error');
+  }
+}
+
+function openBulkSMSModal() {
+  openModal('Send Bulk SMS', `
+    <div class="form-group"><label>Message</label><textarea id="bulk-sms-msg" rows="4" placeholder="Type your message…" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></textarea></div>
+    <p style="font-size:12px;color:var(--gray-500);margin-bottom:12px;">This will send to all customers who have opted in to SMS.</p>
+    <button class="btn btn-primary" onclick="sendBulkSMS()">📢 Send to All</button>
+  `);
+}
+
+async function sendBulkSMS() {
+  const msg = document.getElementById('bulk-sms-msg')?.value?.trim();
+  if (!msg) return showToast('Enter a message', 'error');
+  if (!confirm('Send this SMS to all opted-in customers?')) return;
+  const r = await api('POST', '/api/sms/bulk', { message: msg });
+  closeModal();
+  if (r?.ok) showToast(`Sent to ${r.sent || 0} customers!`);
+  else showToast('Failed: ' + (r?.error || ''), 'error');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// EMAIL CENTER
+// ═══════════════════════════════════════════════════════════════════════════
+async function loadEmailCenter() {
+  const list = document.getElementById('email-templates-list');
+  list.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const templates = await api('GET', '/admin/api/email-templates');
+    if (!templates || !templates.length) { list.innerHTML = '<div class="empty-state"><p>No email templates yet</p></div>'; return; }
+    list.innerHTML = `<table class="data-table"><thead><tr><th>Name</th><th>Subject</th><th>Category</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+      ${templates.map(t => `<tr>
+        <td><strong>${esc(t.name)}</strong></td>
+        <td>${esc(t.subject)}</td>
+        <td><span class="badge">${esc(t.category || 'general')}</span></td>
+        <td>${t.is_active ? '<span class="badge badge-green">Active</span>' : '<span class="badge badge-red">Inactive</span>'}</td>
+        <td><button class="btn btn-ghost btn-sm" onclick="editEmailTemplate(${t.id})">Edit</button></td>
+      </tr>`).join('')}</tbody></table>`;
+  } catch (err) {
+    list.innerHTML = '<div class="empty-state"><p>Email center ready — templates will be created on first deploy</p></div>';
+  }
+}
+
+async function editEmailTemplate(id) {
+  const t = await api('GET', `/admin/api/email-templates/${id}`);
+  if (!t) return;
+  openModal('Edit Email Template', `
+    <div class="form-group"><label>Subject</label><input id="et-subject" value="${esc(t.subject)}" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></div>
+    <div class="form-group"><label>HTML Body</label><textarea id="et-body" rows="12" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);font-family:monospace;font-size:12px;">${esc(t.html_body || '')}</textarea></div>
+    <p style="font-size:11px;color:var(--gray-500);margin-bottom:12px;">Variables: {first_name}, {last_name}, {company_name}, {portal_url}, {support_phone}</p>
+    <button class="btn btn-primary" onclick="saveEmailTemplate(${id})">Save</button>
+  `);
+}
+
+async function saveEmailTemplate(id) {
+  const subject = document.getElementById('et-subject')?.value;
+  const html_body = document.getElementById('et-body')?.value;
+  const r = await api('PUT', `/admin/api/email-templates/${id}`, { subject, html_body });
+  if (r?.ok) { closeModal(); showToast('Template saved!'); loadEmailCenter(); }
+  else showToast('Failed to save', 'error');
+}
+
+function openComposeEmailModal() {
+  openModal('Compose Email', `
+    <div class="form-group"><label>To</label><input id="compose-to" placeholder="email@example.com" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></div>
+    <div class="form-group"><label>Subject</label><input id="compose-subject" placeholder="Subject line" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></div>
+    <div class="form-group"><label>Message (HTML supported)</label><textarea id="compose-body" rows="8" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></textarea></div>
+    <button class="btn btn-primary" onclick="sendComposedEmail()">✉️ Send</button>
+  `);
+}
+
+async function sendComposedEmail() {
+  const to = document.getElementById('compose-to')?.value;
+  const subject = document.getElementById('compose-subject')?.value;
+  const html = document.getElementById('compose-body')?.value;
+  if (!to || !subject || !html) return showToast('Fill all fields', 'error');
+  // Use a custom API endpoint for ad-hoc email
+  const r = await api('POST', '/admin/api/email/send', { to, subject, html });
+  if (r?.ok) { closeModal(); showToast('Email sent!'); }
+  else showToast('Failed: ' + (r?.error || ''), 'error');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// KNOWLEDGE BASE
+// ═══════════════════════════════════════════════════════════════════════════
+async function loadKnowledgeBase() {
+  const list = document.getElementById('kb-articles-list');
+  list.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const articles = await api('GET', '/admin/api/kb');
+    if (!articles || !articles.length) { list.innerHTML = '<div class="empty-state"><p>No articles yet. Create your first knowledge base article!</p></div>'; return; }
+    list.innerHTML = `<table class="data-table"><thead><tr><th>Title</th><th>Category</th><th>Visibility</th><th>Views</th><th>Updated</th><th>Actions</th></tr></thead><tbody>
+      ${articles.map(a => `<tr>
+        <td><strong>${esc(a.title)}</strong></td>
+        <td><span class="badge">${esc(a.category || 'General')}</span></td>
+        <td>${a.is_public ? '<span class="badge badge-green">Public</span>' : ''}${a.is_internal ? '<span class="badge badge-blue">Internal</span>' : ''}</td>
+        <td>${a.view_count || 0}</td>
+        <td>${timeAgo(a.updated_at)}</td>
+        <td>
+          <button class="btn btn-ghost btn-sm" onclick="editKBArticle(${a.id})">Edit</button>
+          <button class="btn btn-ghost btn-sm" style="color:var(--red);" onclick="deleteKBArticle(${a.id})">Delete</button>
+        </td>
+      </tr>`).join('')}</tbody></table>`;
+  } catch (err) {
+    list.innerHTML = '<div class="empty-state"><p>Knowledge Base ready — articles will be seeded on deploy</p></div>';
+  }
+}
+
+function openNewKBArticleModal() {
+  openModal('New KB Article', `
+    <div class="form-group"><label>Title</label><input id="kb-title" placeholder="How to reset your password" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></div>
+    <div class="form-group"><label>Category</label><select id="kb-category" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);">
+      <option value="General">General</option><option value="Troubleshooting">Troubleshooting</option>
+      <option value="Billing">Billing</option><option value="Repairs">Repairs</option>
+      <option value="Remote Support">Remote Support</option></select></div>
+    <div class="form-group"><label>Content (HTML)</label><textarea id="kb-content" rows="10" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></textarea></div>
+    <div style="display:flex;gap:12px;margin-bottom:12px;">
+      <label><input type="checkbox" id="kb-public" checked> Public (visible to customers)</label>
+      <label><input type="checkbox" id="kb-internal"> Internal only</label>
+    </div>
+    <button class="btn btn-primary" onclick="createKBArticle()">Create Article</button>
+  `);
+}
+
+async function createKBArticle() {
+  const r = await api('POST', '/admin/api/kb', {
+    title: document.getElementById('kb-title')?.value,
+    content: document.getElementById('kb-content')?.value,
+    category: document.getElementById('kb-category')?.value,
+    is_public: document.getElementById('kb-public')?.checked,
+    is_internal: document.getElementById('kb-internal')?.checked,
+  });
+  if (r?.id) { closeModal(); showToast('Article created!'); loadKnowledgeBase(); }
+  else showToast('Failed', 'error');
+}
+
+async function editKBArticle(id) {
+  const a = await api('GET', `/admin/api/kb/${id}`);
+  if (!a) return;
+  openModal('Edit KB Article', `
+    <div class="form-group"><label>Title</label><input id="kb-title" value="${esc(a.title)}" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></div>
+    <div class="form-group"><label>Category</label><input id="kb-category" value="${esc(a.category || '')}" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></div>
+    <div class="form-group"><label>Content (HTML)</label><textarea id="kb-content" rows="10" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);">${esc(a.content || '')}</textarea></div>
+    <div style="display:flex;gap:12px;margin-bottom:12px;">
+      <label><input type="checkbox" id="kb-public" ${a.is_public ? 'checked' : ''}> Public</label>
+      <label><input type="checkbox" id="kb-internal" ${a.is_internal ? 'checked' : ''}> Internal</label>
+    </div>
+    <button class="btn btn-primary" onclick="updateKBArticle(${id})">Save</button>
+  `);
+}
+
+async function updateKBArticle(id) {
+  const r = await api('PUT', `/admin/api/kb/${id}`, {
+    title: document.getElementById('kb-title')?.value,
+    content: document.getElementById('kb-content')?.value,
+    category: document.getElementById('kb-category')?.value,
+    is_public: document.getElementById('kb-public')?.checked,
+    is_internal: document.getElementById('kb-internal')?.checked,
+  });
+  if (r?.ok) { closeModal(); showToast('Updated!'); loadKnowledgeBase(); }
+}
+
+async function deleteKBArticle(id) {
+  if (!confirm('Delete this article?')) return;
+  await api('DELETE', `/admin/api/kb/${id}`);
+  showToast('Deleted'); loadKnowledgeBase();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// COUPONS
+// ═══════════════════════════════════════════════════════════════════════════
+async function loadCoupons() {
+  const list = document.getElementById('coupons-list');
+  list.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const coupons = await api('GET', '/admin/api/coupons');
+    if (!coupons || !coupons.length) { list.innerHTML = '<div class="empty-state"><p>No coupons yet. Create your first promo code!</p></div>'; return; }
+    list.innerHTML = `<table class="data-table"><thead><tr><th>Code</th><th>Discount</th><th>Min Purchase</th><th>Uses</th><th>Expires</th><th>Status</th><th>Actions</th></tr></thead><tbody>
+      ${coupons.map(c => `<tr>
+        <td><code style="background:var(--gray-100);padding:4px 8px;border-radius:4px;font-weight:700;font-size:13px;">${esc(c.code)}</code></td>
+        <td>${c.discount_type === 'percent' ? c.discount_value + '%' : '$' + Number(c.discount_value).toFixed(2)}</td>
+        <td>${c.min_purchase ? '$' + Number(c.min_purchase).toFixed(2) : '—'}</td>
+        <td>${c.uses_count || 0}${c.max_uses ? '/' + c.max_uses : ''}</td>
+        <td>${c.expires_at ? new Date(c.expires_at).toLocaleDateString() : 'Never'}</td>
+        <td>${c.is_active ? '<span class="badge badge-green">Active</span>' : '<span class="badge badge-red">Inactive</span>'}</td>
+        <td><button class="btn btn-ghost btn-sm" onclick="toggleCoupon(${c.id}, ${!c.is_active})">${c.is_active ? 'Disable' : 'Enable'}</button></td>
+      </tr>`).join('')}</tbody></table>`;
+  } catch (err) {
+    list.innerHTML = '<div class="empty-state"><p>Coupons module ready</p></div>';
+  }
+}
+
+function openNewCouponModal() {
+  openModal('Create Coupon', `
+    <div class="form-group"><label>Coupon Code</label><input id="cpn-code" placeholder="SUMMER25" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);text-transform:uppercase;"></div>
+    <div class="form-group"><label>Description</label><input id="cpn-desc" placeholder="Summer sale 25% off" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></div>
+    <div style="display:flex;gap:12px;">
+      <div class="form-group" style="flex:1;"><label>Type</label><select id="cpn-type" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);">
+        <option value="percent">Percentage (%)</option><option value="fixed">Fixed ($)</option></select></div>
+      <div class="form-group" style="flex:1;"><label>Value</label><input id="cpn-value" type="number" step="0.01" placeholder="25" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></div>
+    </div>
+    <div style="display:flex;gap:12px;">
+      <div class="form-group" style="flex:1;"><label>Min Purchase ($)</label><input id="cpn-min" type="number" step="0.01" placeholder="0" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></div>
+      <div class="form-group" style="flex:1;"><label>Max Uses</label><input id="cpn-max" type="number" placeholder="Unlimited" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></div>
+    </div>
+    <div class="form-group"><label>Expiration Date</label><input id="cpn-expires" type="date" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></div>
+    <button class="btn btn-primary" onclick="createCoupon()">Create Coupon</button>
+  `);
+}
+
+async function createCoupon() {
+  const data = {
+    code: document.getElementById('cpn-code')?.value,
+    description: document.getElementById('cpn-desc')?.value,
+    discount_type: document.getElementById('cpn-type')?.value,
+    discount_value: parseFloat(document.getElementById('cpn-value')?.value) || 0,
+    min_purchase: parseFloat(document.getElementById('cpn-min')?.value) || 0,
+    max_uses: parseInt(document.getElementById('cpn-max')?.value) || null,
+    expires_at: document.getElementById('cpn-expires')?.value || null,
+  };
+  if (!data.code || !data.discount_value) return showToast('Code and value required', 'error');
+  const r = await api('POST', '/admin/api/coupons', data);
+  if (r?.id || r?.code) { closeModal(); showToast('Coupon created!'); loadCoupons(); }
+  else showToast('Failed: ' + (r?.error || ''), 'error');
+}
+
+async function toggleCoupon(id, active) {
+  await api('PUT', `/admin/api/coupons/${id}`, { is_active: active });
+  showToast(active ? 'Coupon enabled' : 'Coupon disabled'); loadCoupons();
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// EXPENSES
+// ═══════════════════════════════════════════════════════════════════════════
+async function loadExpenses() {
+  const list = document.getElementById('expenses-list');
+  const totals = document.getElementById('expense-totals');
+  list.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  const month = document.getElementById('expense-month')?.value || '';
+  try {
+    const r = await api('GET', `/admin/api/expenses?month=${month}`);
+    const expenses = r?.expenses || [];
+    const cats = r?.totals || [];
+    
+    // Category totals
+    const totalAll = cats.reduce((s, c) => s + parseFloat(c.total), 0);
+    totals.innerHTML = `
+      <div class="stat-card stat-red"><div class="stat-label">Total Expenses</div><div class="stat-value">$${totalAll.toFixed(2)}</div></div>
+      ${cats.slice(0, 3).map(c => `<div class="stat-card"><div class="stat-label">${esc(c.category)}</div><div class="stat-value">$${Number(c.total).toFixed(2)}</div></div>`).join('')}
+    `;
+
+    if (!expenses.length) { list.innerHTML = '<div class="empty-state"><p>No expenses recorded for this period</p></div>'; return; }
+    list.innerHTML = `<table class="data-table"><thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Vendor</th><th>Amount</th><th>By</th></tr></thead><tbody>
+      ${expenses.map(e => `<tr>
+        <td>${new Date(e.expense_date).toLocaleDateString()}</td>
+        <td><span class="badge">${esc(e.category)}</span></td>
+        <td>${esc(e.description)}</td>
+        <td>${esc(e.vendor || '—')}</td>
+        <td style="font-weight:600;color:var(--red);">$${Number(e.amount).toFixed(2)}</td>
+        <td>${esc(e.created_by_name || '—')}</td>
+      </tr>`).join('')}</tbody></table>`;
+  } catch (err) {
+    list.innerHTML = '<div class="empty-state"><p>Expense tracking ready</p></div>';
+    totals.innerHTML = '';
+  }
+}
+
+function openNewExpenseModal() {
+  openModal('Add Expense', `
+    <div class="form-group"><label>Category</label><select id="exp-cat" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);">
+      <option value="Parts & Supplies">Parts & Supplies</option><option value="Rent">Rent</option>
+      <option value="Utilities">Utilities</option><option value="Marketing">Marketing</option>
+      <option value="Software">Software</option><option value="Tools & Equipment">Tools & Equipment</option>
+      <option value="Vehicle">Vehicle</option><option value="Insurance">Insurance</option>
+      <option value="Office">Office</option><option value="Other">Other</option></select></div>
+    <div class="form-group"><label>Description</label><input id="exp-desc" placeholder="What was purchased?" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></div>
+    <div style="display:flex;gap:12px;">
+      <div class="form-group" style="flex:1;"><label>Amount ($)</label><input id="exp-amt" type="number" step="0.01" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></div>
+      <div class="form-group" style="flex:1;"><label>Date</label><input id="exp-date" type="date" value="${new Date().toISOString().slice(0,10)}" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></div>
+    </div>
+    <div style="display:flex;gap:12px;">
+      <div class="form-group" style="flex:1;"><label>Vendor</label><input id="exp-vendor" placeholder="Store/vendor name" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></div>
+      <div class="form-group" style="flex:1;"><label>Payment Method</label><select id="exp-method" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);">
+        <option value="card">Card</option><option value="cash">Cash</option><option value="check">Check</option><option value="transfer">Transfer</option></select></div>
+    </div>
+    <button class="btn btn-primary" onclick="createExpense()">Add Expense</button>
+  `);
+}
+
+async function createExpense() {
+  const data = {
+    category: document.getElementById('exp-cat')?.value,
+    description: document.getElementById('exp-desc')?.value,
+    amount: parseFloat(document.getElementById('exp-amt')?.value) || 0,
+    expense_date: document.getElementById('exp-date')?.value,
+    vendor: document.getElementById('exp-vendor')?.value,
+    payment_method: document.getElementById('exp-method')?.value,
+  };
+  if (!data.amount || !data.description) return showToast('Amount and description required', 'error');
+  const r = await api('POST', '/admin/api/expenses', data);
+  if (r?.id) { closeModal(); showToast('Expense added!'); loadExpenses(); }
+  else showToast('Failed', 'error');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// SUPPLIERS & PURCHASE ORDERS
+// ═══════════════════════════════════════════════════════════════════════════
+async function loadSuppliers() {
+  const list = document.getElementById('suppliers-list');
+  list.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const suppliers = await api('GET', '/admin/api/suppliers');
+    if (!suppliers || !suppliers.length) { list.innerHTML = '<div class="empty-state"><p>No suppliers yet. Add your first vendor!</p></div>'; return; }
+    list.innerHTML = `<table class="data-table"><thead><tr><th>Name</th><th>Contact</th><th>Email</th><th>Phone</th><th>Lead Time</th></tr></thead><tbody>
+      ${suppliers.map(s => `<tr>
+        <td><strong>${esc(s.name)}</strong></td>
+        <td>${esc(s.contact_name || '—')}</td>
+        <td>${esc(s.email || '—')}</td>
+        <td>${esc(s.phone || '—')}</td>
+        <td>${s.lead_time_days ? s.lead_time_days + ' days' : '—'}</td>
+      </tr>`).join('')}</tbody></table>`;
+  } catch (err) {
+    list.innerHTML = '<div class="empty-state"><p>Supplier management ready</p></div>';
+  }
+  // Also load POs
+  loadPurchaseOrders();
+}
+
+async function loadPurchaseOrders() {
+  const list = document.getElementById('po-list');
+  if (!list) return;
+  try {
+    const orders = await api('GET', '/admin/api/purchase-orders');
+    if (!orders || !orders.length) { list.innerHTML = '<div class="empty-state"><p>No purchase orders yet</p></div>'; return; }
+    list.innerHTML = `<table class="data-table"><thead><tr><th>PO #</th><th>Supplier</th><th>Items</th><th>Total</th><th>Status</th><th>Date</th></tr></thead><tbody>
+      ${orders.map(o => `<tr>
+        <td><code>${esc(o.po_number)}</code></td>
+        <td>${esc(o.supplier_name || '—')}</td>
+        <td>${o.item_count} items</td>
+        <td style="font-weight:600;">$${Number(o.total_amount).toFixed(2)}</td>
+        <td><span class="badge badge-${o.status === 'delivered' ? 'green' : o.status === 'ordered' ? 'blue' : 'yellow'}">${esc(o.status)}</span></td>
+        <td>${new Date(o.created_at).toLocaleDateString()}</td>
+      </tr>`).join('')}</tbody></table>`;
+  } catch (err) {}
+}
+
+function openNewSupplierModal() {
+  openModal('Add Supplier', `
+    <div class="form-group"><label>Company Name</label><input id="sup-name" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></div>
+    <div style="display:flex;gap:12px;">
+      <div class="form-group" style="flex:1;"><label>Contact Person</label><input id="sup-contact" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></div>
+      <div class="form-group" style="flex:1;"><label>Lead Time (days)</label><input id="sup-lead" type="number" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></div>
+    </div>
+    <div style="display:flex;gap:12px;">
+      <div class="form-group" style="flex:1;"><label>Email</label><input id="sup-email" type="email" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></div>
+      <div class="form-group" style="flex:1;"><label>Phone</label><input id="sup-phone" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></div>
+    </div>
+    <div class="form-group"><label>Website</label><input id="sup-website" placeholder="https://..." style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></div>
+    <button class="btn btn-primary" onclick="createSupplier()">Add Supplier</button>
+  `);
+}
+
+async function createSupplier() {
+  const data = {
+    name: document.getElementById('sup-name')?.value,
+    contact_name: document.getElementById('sup-contact')?.value,
+    email: document.getElementById('sup-email')?.value,
+    phone: document.getElementById('sup-phone')?.value,
+    website: document.getElementById('sup-website')?.value,
+    lead_time_days: parseInt(document.getElementById('sup-lead')?.value) || null,
+  };
+  if (!data.name) return showToast('Name required', 'error');
+  const r = await api('POST', '/admin/api/suppliers', data);
+  if (r?.id) { closeModal(); showToast('Supplier added!'); loadSuppliers(); }
+  else showToast('Failed', 'error');
+}
+
+function openNewPOModal() {
+  openModal('Create Purchase Order', `
+    <p style="color:var(--gray-500);font-size:13px;margin-bottom:12px;">Select a supplier, add items, and create the PO.</p>
+    <div class="form-group"><label>Supplier</label><select id="po-supplier" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"><option value="">Loading suppliers…</option></select></div>
+    <div id="po-items-list" style="margin-bottom:12px;"></div>
+    <button class="btn btn-sm" onclick="addPOItem()" style="margin-bottom:12px;">+ Add Item</button>
+    <div class="form-group"><label>Notes</label><textarea id="po-notes" rows="2" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></textarea></div>
+    <button class="btn btn-primary" onclick="createPO()">Create PO</button>
+  `);
+  // Load suppliers into dropdown
+  api('GET', '/admin/api/suppliers').then(suppliers => {
+    const sel = document.getElementById('po-supplier');
+    if (sel && suppliers) sel.innerHTML = suppliers.map(s => `<option value="${s.id}">${esc(s.name)}</option>`).join('');
+  });
+  addPOItem();
+}
+
+let poItemCount = 0;
+function addPOItem() {
+  const list = document.getElementById('po-items-list');
+  if (!list) return;
+  const idx = poItemCount++;
+  list.insertAdjacentHTML('beforeend', `
+    <div id="po-item-${idx}" style="display:flex;gap:8px;margin-bottom:8px;align-items:end;">
+      <div style="flex:2;"><input placeholder="Description" id="poi-desc-${idx}" style="width:100%;padding:6px 8px;border:1px solid var(--gray-200);border-radius:var(--radius-sm);font-size:13px;"></div>
+      <div style="flex:1;"><input type="number" placeholder="Qty" id="poi-qty-${idx}" value="1" style="width:100%;padding:6px 8px;border:1px solid var(--gray-200);border-radius:var(--radius-sm);font-size:13px;"></div>
+      <div style="flex:1;"><input type="number" step="0.01" placeholder="Unit $" id="poi-cost-${idx}" style="width:100%;padding:6px 8px;border:1px solid var(--gray-200);border-radius:var(--radius-sm);font-size:13px;"></div>
+      <button class="btn btn-ghost btn-sm" style="color:var(--red);" onclick="document.getElementById('po-item-${idx}').remove()">✕</button>
+    </div>
+  `);
+}
+
+async function createPO() {
+  const items = [];
+  for (let i = 0; i < poItemCount; i++) {
+    const desc = document.getElementById(`poi-desc-${i}`)?.value;
+    const qty = parseInt(document.getElementById(`poi-qty-${i}`)?.value) || 0;
+    const cost = parseFloat(document.getElementById(`poi-cost-${i}`)?.value) || 0;
+    if (desc && qty && cost) items.push({ description: desc, quantity: qty, unit_cost: cost });
+  }
+  if (!items.length) return showToast('Add at least one item', 'error');
+  const r = await api('POST', '/admin/api/purchase-orders', {
+    supplier_id: parseInt(document.getElementById('po-supplier')?.value) || null,
+    items,
+    notes: document.getElementById('po-notes')?.value,
+  });
+  if (r?.id) { closeModal(); showToast(`PO ${r.po_number} created!`); poItemCount = 0; loadSuppliers(); }
+  else showToast('Failed', 'error');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TIME CLOCK
+// ═══════════════════════════════════════════════════════════════════════════
+async function loadTimeClock() {
+  const status = document.getElementById('timeclock-status');
+  const history = document.getElementById('timeclock-history');
+  status.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const r = await api('GET', '/admin/api/timeclock');
+    const active = r?.active;
+    const entries = r?.entries || [];
+
+    if (active) {
+      const elapsed = ((Date.now() - new Date(active.clock_in).getTime()) / 3600000).toFixed(1);
+      status.innerHTML = `
+        <div style="font-size:48px;margin-bottom:8px;">🟢</div>
+        <div style="font-size:20px;font-weight:700;color:var(--green);margin-bottom:4px;">Clocked In</div>
+        <div style="color:var(--gray-500);margin-bottom:4px;">Since ${new Date(active.clock_in).toLocaleTimeString()}</div>
+        <div style="font-size:28px;font-weight:700;margin-bottom:16px;">${elapsed} hours</div>
+        <div style="display:flex;gap:8px;justify-content:center;align-items:center;">
+          <input id="tc-notes" placeholder="Notes (optional)" style="padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);width:200px;">
+          <input id="tc-break" type="number" placeholder="Break (min)" style="padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);width:120px;">
+          <button class="btn btn-primary" onclick="clockOut()">⏹ Clock Out</button>
+        </div>
+      `;
+    } else {
+      status.innerHTML = `
+        <div style="font-size:48px;margin-bottom:8px;">⏸️</div>
+        <div style="font-size:20px;font-weight:700;color:var(--gray-400);margin-bottom:16px;">Not Clocked In</div>
+        <button class="btn btn-primary btn-lg" onclick="clockIn()">▶️ Clock In</button>
+      `;
+    }
+
+    if (!entries.length) { history.innerHTML = '<div class="empty-state"><p>No time entries yet</p></div>'; return; }
+    history.innerHTML = `<table class="data-table"><thead><tr><th>Employee</th><th>Clock In</th><th>Clock Out</th><th>Break</th><th>Hours</th><th>Notes</th></tr></thead><tbody>
+      ${entries.map(e => `<tr>
+        <td>${esc(e.admin_name)}</td>
+        <td>${new Date(e.clock_in).toLocaleString()}</td>
+        <td>${e.clock_out ? new Date(e.clock_out).toLocaleString() : '<span class="badge badge-green">Active</span>'}</td>
+        <td>${e.break_minutes || 0} min</td>
+        <td style="font-weight:600;">${e.total_hours ? Number(e.total_hours).toFixed(1) + 'h' : '—'}</td>
+        <td style="color:var(--gray-500);font-size:12px;">${esc(e.notes || '')}</td>
+      </tr>`).join('')}</tbody></table>`;
+  } catch (err) {
+    status.innerHTML = '<div style="font-size:48px;margin-bottom:8px;">⏸️</div><div style="font-size:20px;font-weight:700;color:var(--gray-400);margin-bottom:16px;">Time Clock Ready</div><button class="btn btn-primary btn-lg" onclick="clockIn()">▶️ Clock In</button>';
+    history.innerHTML = '';
+  }
+}
+
+async function clockIn() {
+  const r = await api('POST', '/admin/api/timeclock/in');
+  if (r?.id) { showToast('Clocked in!'); loadTimeClock(); }
+  else showToast('Failed: ' + (r?.error || ''), 'error');
+}
+
+async function clockOut() {
+  const notes = document.getElementById('tc-notes')?.value;
+  const break_minutes = parseInt(document.getElementById('tc-break')?.value) || 0;
+  const r = await api('POST', '/admin/api/timeclock/out', { notes, break_minutes });
+  if (r?.id) { showToast(`Clocked out! ${r.total_hours}h recorded`); loadTimeClock(); }
+  else showToast('Failed: ' + (r?.error || ''), 'error');
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// WALK-IN QUEUE
+// ═══════════════════════════════════════════════════════════════════════════
+async function loadWalkinQueue() {
+  const list = document.getElementById('walkin-queue-list');
+  const avg = document.getElementById('queue-avg-wait');
+  list.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const r = await api('GET', '/admin/api/queue');
+    const queue = r?.queue || [];
+    if (avg) avg.textContent = `Avg wait: ${r?.avgWait || '—'} min`;
+
+    if (!queue.length) { list.innerHTML = '<div class="empty-state"><p>Queue is empty — no customers waiting</p></div>'; return; }
+    list.innerHTML = queue.map((q, i) => `
+      <div style="display:flex;align-items:center;padding:16px;border-bottom:1px solid var(--gray-100);gap:16px;">
+        <div style="width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;
+          background:${q.status === 'serving' ? 'var(--green)' : 'var(--scarlet)'};color:#fff;">
+          ${q.status === 'serving' ? '→' : q.position}
+        </div>
+        <div style="flex:1;">
+          <div style="font-weight:600;">${esc(q.customer_name || q.first_name && q.last_name ? q.first_name + ' ' + q.last_name : 'Walk-in')}</div>
+          <div style="color:var(--gray-500);font-size:12px;">${esc(q.reason || 'No reason given')} · ${esc(q.phone || '')}</div>
+          <div style="color:var(--gray-400);font-size:11px;">Checked in ${timeAgo(q.checked_in_at)}</div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          ${q.status === 'waiting' ? `<button class="btn btn-primary btn-sm" onclick="callQueueCustomer(${q.id})">📣 Call</button>` : ''}
+          ${q.status === 'serving' ? `<button class="btn btn-sm" style="background:var(--green);color:#fff;" onclick="completeQueueCustomer(${q.id})">✅ Done</button>` : ''}
+        </div>
+      </div>
+    `).join('');
+  } catch (err) {
+    list.innerHTML = '<div class="empty-state"><p>Walk-in queue ready</p></div>';
+  }
+}
+
+function openAddToQueueModal() {
+  openModal('Add to Queue', `
+    <div class="form-group"><label>Customer Name</label><input id="q-name" placeholder="Name" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></div>
+    <div class="form-group"><label>Phone</label><input id="q-phone" placeholder="(555) 123-4567" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);"></div>
+    <div class="form-group"><label>Reason for Visit</label><select id="q-reason" style="width:100%;padding:8px;border:1px solid var(--gray-200);border-radius:var(--radius);">
+      <option value="Drop-off repair">Drop-off repair</option>
+      <option value="Pick-up device">Pick-up device</option>
+      <option value="Quick question">Quick question</option>
+      <option value="New customer">New customer</option>
+      <option value="Payment">Payment</option>
+      <option value="Other">Other</option></select></div>
+    <button class="btn btn-primary" onclick="addToQueue()">Add to Queue</button>
+  `);
+}
+
+async function addToQueue() {
+  const data = {
+    customer_name: document.getElementById('q-name')?.value,
+    phone: document.getElementById('q-phone')?.value,
+    reason: document.getElementById('q-reason')?.value,
+  };
+  if (!data.customer_name) return showToast('Name required', 'error');
+  const r = await api('POST', '/admin/api/queue', data);
+  if (r?.id) { closeModal(); showToast('Added to queue!'); loadWalkinQueue(); }
+  else showToast('Failed', 'error');
+}
+
+async function callQueueCustomer(id) {
+  await api('PUT', `/admin/api/queue/${id}/call`);
+  showToast('Customer called!'); loadWalkinQueue();
+}
+
+async function completeQueueCustomer(id) {
+  await api('PUT', `/admin/api/queue/${id}/complete`);
+  showToast('Customer completed!'); loadWalkinQueue();
+}
+
+// ─── Helper: timeAgo for dates ──────────────────────────────────────────────
+function timeAgo(dateStr) {
+  if (!dateStr) return '—';
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const mins = Math.floor(diff / 60000);
+  if (mins < 1) return 'just now';
+  if (mins < 60) return mins + 'm ago';
+  const hrs = Math.floor(mins / 60);
+  if (hrs < 24) return hrs + 'h ago';
+  const days = Math.floor(hrs / 24);
+  return days + 'd ago';
 }
 
 </script>

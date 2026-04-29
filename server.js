@@ -109,6 +109,13 @@ app.use(require('./routes/admin/exports'));
 app.use(require('./routes/portal/index'));
 app.use(require('./routes/portal/payments'));
 
+// SMS webhook (Twilio inbound + admin SMS tools)
+app.use(require('./routes/sms-webhook'));
+
+// New v3.0 feature routes
+app.use(require('./routes/admin/support'));
+app.use(require('./routes/admin/operations'));
+
 // Device agent API
 app.use(require('./routes/agent/index'));
 
