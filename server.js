@@ -1,53 +1,24 @@
-require('dotenv').config();
-const express = require('express');
-const { Pool } = require('pg');
-
-const app = express();
-const PORT = process.env.PORT || 10000;
-
-// DB connection with SSL
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_URL?.includes('supabase') || process.env.NODE_ENV === 'production'
-    ? { rejectUnauthorized: false }
-    : false,
-});
-
-app.get('/', (req, res) => {
-  res.json({ status: 'ok', message: 'Scarlet Technical — testing DB' });
-});
-
-app.get('/health', (req, res) => {
-  res.json({ status: 'healthy' });
-});
-
-async function start() {
-  try {
-    // Test DB connection
-    const client = await pool.connect();
-    const result = await client.query('SELECT NOW()');
-    console.log('Database connected:', result.rows[0].now);
-    client.release();
-
-    // Try running migrations
-    try {
-      const { execSync } = require('child_process');
-      execSync('node migrate.js', { stdio: 'inherit', cwd: __dirname, timeout: 120000 });
-      console.log('Migrations completed');
-    } catch (err) {
-      console.error('Migration error (non-fatal):', err.message);
-    }
-
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+// Wrapper to catch and log startup errors
+try {
+  require('./_server.js');
+} catch (err) {
+  console.error('=== STARTUP CRASH ===');
+  console.error('Error:', err.message);
+  console.error('Stack:', err.stack);
+  console.error('=====================');
+  
+  // Start a minimal server so Render doesn't restart loop
+  const express = require('express');
+  const app = express();
+  const PORT = process.env.PORT || 10000;
+  app.get('*', (req, res) => {
+    res.status(500).json({ 
+      error: 'Server failed to start', 
+      message: err.message,
+      stack: err.stack?.split('\n').slice(0, 5)
     });
-  } catch (err) {
-    console.error('Startup failed:', err.message);
-    // Fall back to minimal server without DB
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT} (DB unavailable)`);
-    });
-  }
+  });
+  app.listen(PORT, () => {
+    console.log(`Error server on port ${PORT} — check /health for details`);
+  });
 }
-
-start();
