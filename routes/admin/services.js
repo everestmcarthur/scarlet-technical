@@ -138,39 +138,39 @@ router.put('/admin/api/loaners/:id', requireAdmin, async (req, res) => {
 
 router.get('/admin/api/inventory', requireAdmin, async (req, res) => {
   const { search, low_stock } = req.query;
-  let q = 'SELECT * FROM inventory WHERE 1=1';
+  let q = 'SELECT * FROM inventory_parts WHERE 1=1';
   const params = [];
   if (search) { params.push(`%${search}%`); q += ` AND (name ILIKE $${params.length} OR sku ILIKE $${params.length})`; }
-  if (low_stock === 'true') q += ' AND quantity <= reorder_point';
+  if (low_stock === 'true') q += ' AND quantity <= low_stock_threshold';
   q += ' ORDER BY name';
   try { res.json((await pool.query(q, params)).rows); }
   catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 router.post('/admin/api/inventory', requireAdmin, async (req, res) => {
-  const { name, sku, description, quantity, unit_cost, sell_price, reorder_point, category, supplier, location } = req.body;
+  const { name, sku, description, quantity, unit_cost, unit_price, low_stock_threshold, category, supplier, location } = req.body;
   if (!name) return res.status(400).json({ error: 'name required' });
   try {
     const r = await pool.query(
-      `INSERT INTO inventory (name,sku,description,quantity,unit_cost,sell_price,reorder_point,category,supplier,location)
+      `INSERT INTO inventory_parts (name,sku,description,quantity,unit_cost,unit_price,low_stock_threshold,category,supplier,location)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
       [name, sku||null, description||null, parseInt(quantity||0), parseFloat(unit_cost||0),
-       parseFloat(sell_price||0), parseInt(reorder_point||5), category||null, supplier||null, location||null]);
+       parseFloat(unit_price||0), parseInt(low_stock_threshold||5), category||null, supplier||null, location||null]);
     res.json(r.rows[0]);
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
 router.put('/admin/api/inventory/:id', requireAdmin, async (req, res) => {
-  const { name, sku, description, quantity, unit_cost, sell_price, reorder_point, category, supplier, location } = req.body;
+  const { name, sku, description, quantity, unit_cost, unit_price, low_stock_threshold, category, supplier, location } = req.body;
   try {
     const r = await pool.query(
       `UPDATE inventory SET name=COALESCE($1,name),sku=$2,description=$3,
-       quantity=COALESCE($4,quantity),unit_cost=COALESCE($5,unit_cost),sell_price=COALESCE($6,sell_price),
-       reorder_point=COALESCE($7,reorder_point),category=$8,supplier=$9,location=$10,updated_at=NOW()
+       quantity=COALESCE($4,quantity),unit_cost=COALESCE($5,unit_cost),unit_price=COALESCE($6,unit_price),
+       low_stock_threshold=COALESCE($7,low_stock_threshold),category=$8,supplier=$9,location=$10,updated_at=NOW()
        WHERE id=$11 RETURNING *`,
       [name||null, sku??null, description??null, quantity!=null?parseInt(quantity):null,
-       unit_cost!=null?parseFloat(unit_cost):null, sell_price!=null?parseFloat(sell_price):null,
-       reorder_point!=null?parseInt(reorder_point):null, category??null, supplier??null, location??null, req.params.id]);
+       unit_cost!=null?parseFloat(unit_cost):null, unit_price!=null?parseFloat(unit_price):null,
+       low_stock_threshold!=null?parseInt(low_stock_threshold):null, category??null, supplier??null, location??null, req.params.id]);
     if (!r.rows.length) return res.status(404).json({ error: 'Not found' });
     res.json(r.rows[0]);
   } catch (err) { res.status(500).json({ error: err.message }); }
@@ -178,7 +178,7 @@ router.put('/admin/api/inventory/:id', requireAdmin, async (req, res) => {
 
 router.delete('/admin/api/inventory/:id', requireAdmin, async (req, res) => {
   try {
-    await pool.query('DELETE FROM inventory WHERE id=$1', [req.params.id]);
+    await pool.query('DELETE FROM inventory_parts WHERE id=$1', [req.params.id]);
     res.json({ success: true });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });

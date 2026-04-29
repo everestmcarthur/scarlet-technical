@@ -74,7 +74,7 @@ router.post('/admin/api/repairs/:id/parts', async (req, res) => {
     if (!inv.rows[0]) return res.status(404).json({ error: 'Part not found' });
     if (inv.rows[0].quantity < quantity) return res.status(400).json({ error: 'Insufficient stock' });
     
-    const cost = inv.rows[0].sell_price || inv.rows[0].unit_cost || 0;
+    const cost = inv.rows[0].unit_price || inv.rows[0].unit_cost || 0;
     await pool.query('UPDATE inventory_parts SET quantity = quantity - $1 WHERE id = $2', [quantity, inventory_id]);
     
     const { rows } = await pool.query(

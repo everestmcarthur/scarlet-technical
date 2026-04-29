@@ -30,7 +30,7 @@ router.get('/admin/api/analytics/executive', async (req, res) => {
         COUNT(*) FILTER (WHERE status = 'open') as open_tickets,
         COUNT(*) FILTER (WHERE status = 'open' AND created_at < NOW() - INTERVAL '24 hours') as overdue
         FROM support_tickets`),
-      pool.query(`SELECT COUNT(*) as upcoming FROM appointments WHERE date >= CURRENT_DATE AND date <= CURRENT_DATE + INTERVAL '7 days'`)
+      pool.query(`SELECT COUNT(*) as upcoming FROM appointments WHERE scheduled_at >= CURRENT_DATE AND scheduled_at <= CURRENT_DATE + INTERVAL '7 days'`)
     ]);
     
     res.json({

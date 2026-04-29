@@ -34,7 +34,7 @@ router.post('/api/portal/repairs/:id/pay', requireCustomer, async (req, res) => 
 
     // Calculate amount due (total - already paid)
     const paidResult = await pool.query(
-      `SELECT COALESCE(SUM(amount), 0) as total_paid FROM payments 
+      `SELECT COALESCE(SUM(amount), 0) as total_paid FROM stripe_payments 
        WHERE repair_id = $1 AND status = 'completed'`,
       [repairId]
     );

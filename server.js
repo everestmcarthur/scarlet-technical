@@ -123,23 +123,6 @@ app.use(require('./routes/admin/scheduling'));
 // Device agent API
 app.use(require('./routes/agent/index'));
 
-// ─── Debug: migration & table status (temporary) ────────────────────────────
-app.get('/admin/api/debug-db', async (req, res) => {
-  try {
-    const { pool } = require('./lib/db');
-    const migrations = await pool.query('SELECT name FROM _migrations ORDER BY name');
-    const tables = await pool.query("SELECT tablename FROM pg_tables WHERE schemaname='public' ORDER BY tablename");
-    const adminUser = await pool.query('SELECT id, email, name, display_name FROM admin_users ORDER BY id LIMIT 1');
-    res.json({
-      migrations: migrations.rows.map(r => r.name),
-      tables: tables.rows.map(r => r.tablename),
-      admin: adminUser.rows[0] || null
-    });
-  } catch (err) {
-    res.json({ error: err.message });
-  }
-});
-
 // ─── Admin SPA Fallback ─────────────────────────────────────────────────────
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/admin/index.html'));
