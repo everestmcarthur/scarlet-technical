@@ -183,7 +183,7 @@ router.get('/admin/api/search', async (req, res) => {
       pool.query(`SELECT id, name, email, phone, 'customer' as type FROM customers WHERE name ILIKE $1 OR email ILIKE $1 OR phone ILIKE $1 LIMIT 5`, [term]),
       pool.query(`SELECT id, device_type, issue_description, status, 'repair' as type FROM repair_requests WHERE device_type ILIKE $1 OR issue_description ILIKE $1 OR id::text = $2 LIMIT 5`, [term, q]),
       pool.query(`SELECT id, subject, status, 'ticket' as type FROM support_tickets WHERE subject ILIKE $1 OR id::text = $2 LIMIT 5`, [term, q]),
-      pool.query(`SELECT id, description, status, 'invoice' as type FROM invoices WHERE description ILIKE $1 OR id::text = $2 LIMIT 5`, [term, q])
+      pool.query(`SELECT id, invoice_number, status, 'invoice' as type FROM invoices WHERE notes ILIKE $1 OR id::text = $2 LIMIT 5`, [term, q])
     ]);
     
     res.json([...customers.rows, ...repairs.rows, ...tickets.rows, ...invoices.rows]);
