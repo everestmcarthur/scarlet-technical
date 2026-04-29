@@ -25,7 +25,10 @@ const fs = require('fs');
 const path = require('path');
 
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL
+  connectionString: process.env.DATABASE_URL,
+  ssl: process.env.DATABASE_URL?.includes('supabase') || process.env.DB_SSL === 'true'
+    ? { rejectUnauthorized: false }
+    : (process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false),
 });
 
 async function migrate() {
@@ -104,7 +107,7 @@ async function runFolderMigrations(client) {
 
   // Get all migration files, sorted by name (timestamp prefix ensures order)
   const files = fs.readdirSync(migrationsDir)
-    .filter(f => f.endsWith('.js'))
+    .filter(f => f.endsWith('.js') || f.endsWith('.sql'))
     .sort();
 
   if (files.length === 0) {
@@ -117,8 +120,16 @@ async function runFolderMigrations(client) {
 
   // Run pending migrations
   for (const file of files) {
-    const migration = require(path.join(migrationsDir, file));
-    const name = migration.name || file.replace('.js', '');
+    let migration;
+    const name = file.replace(/\.(js|sql)$/, '');
+
+    if (file.endsWith('.sql')) {
+      const sql = fs.readFileSync(path.join(migrationsDir, file), 'utf8');
+      migration = { name, up: async (client) => { await client.query(sql); } };
+    } else {
+      migration = require(path.join(migrationsDir, file));
+      migration.name = migration.name || name;
+    }
 
     if (appliedNames.has(name)) {
       continue; // Already applied
