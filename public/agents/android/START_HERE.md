@@ -162,7 +162,7 @@ Follow testing checklist in: `DEPLOYMENT_CHECKLIST.md`
 
 **Scarlet Technical Support:**
 - Phone: (765) 555-0100
-- Web: scarlet-technical.polsia.app
+- Web: scarlet-technical.onrender.com
 
 ## License
 

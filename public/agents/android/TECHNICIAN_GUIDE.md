@@ -56,7 +56,7 @@ Device Admin prevents customers from easily uninstalling the app. They would nee
 ### Step 3: Enroll the Device
 
 1. In the enrollment screen, enter:
-   - **Server URL**: `https://scarlet-technical.polsia.app`
+   - **Server URL**: `https://scarlet-technical.onrender.com`
    - **Enrollment Token**: [Get from portal - one per device]
 
 2. Tap "Enroll Device"
@@ -125,7 +125,7 @@ Device Admin prevents customers from easily uninstalling the app. They would nee
 ### Enrollment fails
 **Problem**: "Enrollment failed" message
 **Solution**:
-- Double-check server URL: `https://scarlet-technical.polsia.app`
+- Double-check server URL: `https://scarlet-technical.onrender.com`
 - Make sure NO trailing slash
 - Verify enrollment token is correct
 - Check device has internet connection (try loading a webpage)
@@ -185,8 +185,8 @@ Device Admin prevents customers from easily uninstalling the app. They would nee
 
 **For technician support:**
 - Phone: (765) 555-0100
-- Portal: scarlet-technical.polsia.app
-- Email: support@scarlet-technical.polsia.app
+- Portal: scarlet-technical.onrender.com
+- Email: support@scarlet-technical.onrender.com
 
 **For device issues:**
 1. Check device has internet
@@ -206,7 +206,7 @@ Device Admin prevents customers from easily uninstalling the app. They would nee
 │ 3. Enter server URL and token           │
 │ 4. Verify in portal                     │
 ├─────────────────────────────────────────┤
-│ Server: scarlet-technical.polsia.app    │
+│ Server: scarlet-technical.onrender.com    │
 │ Support: (765) 555-0100                 │
 └─────────────────────────────────────────┘
 ```

@@ -1,105 +1,199 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#1a1a1a"
-    android:padding="32dp">
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
         android:orientation="vertical"
-        android:gravity="center">
+        android:gravity="center_horizontal"
+        android:padding="32dp">
 
+        <!-- Lock Icon -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="🔒"
-            android:textSize="80sp"
-            android:layout_marginBottom="24dp"/>
+            android:textSize="64sp"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="16dp"/>
 
+        <!-- Title -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="DEVICE LOCKED"
-            android:textSize="36sp"
+            android:textSize="32sp"
             android:textColor="#DC143C"
             android:textStyle="bold"
             android:gravity="center"
-            android:layout_marginBottom="32dp"/>
+            android:layout_marginBottom="16dp"/>
 
+        <!-- Lock Message -->
         <TextView
             android:id="@+id/lock_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="This device has been locked by Scarlet Technical"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textColor="#FFFFFF"
             android:gravity="center"
-            android:layout_marginBottom="48dp"
+            android:layout_marginBottom="24dp"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"/>
 
+        <!-- Divider -->
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="#444444"
+            android:background="#333333"
             android:layout_marginBottom="24dp"/>
 
+        <!-- ═══ PIN Entry Section ═══ -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Have an override PIN?"
+            android:textSize="14sp"
+            android:textColor="#AAAAAA"
+            android:layout_marginBottom="8dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="4dp">
+
+            <EditText
+                android:id="@+id/pin_input"
+                android:layout_width="0dp"
+                android:layout_height="48dp"
+                android:layout_weight="1"
+                android:hint="Enter 6-digit PIN"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"
+                android:hintTextColor="#666666"
+                android:background="#2a2a2a"
+                android:padding="12dp"
+                android:inputType="number"
+                android:maxLength="6"
+                android:gravity="center"
+                android:textAlignment="center"
+                android:letterSpacing="0.3"
+                android:layout_marginEnd="8dp"/>
+
+            <Button
+                android:id="@+id/btn_submit_pin"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:text="UNLOCK"
+                android:textSize="14sp"
+                android:textColor="#FFFFFF"
+                android:backgroundTint="#DC143C"
+                android:textStyle="bold"
+                android:paddingLeft="24dp"
+                android:paddingRight="24dp"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/pin_status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="13sp"
+            android:textColor="#CCCCCC"
+            android:gravity="center"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#333333"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- ═══ Action Buttons ═══ -->
+        <Button
+            android:id="@+id/btn_make_payment"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="💳  Make a Payment"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#1E8E3E"
+            android:textAllCaps="false"
+            android:layout_marginBottom="12dp"/>
+
+        <Button
+            android:id="@+id/btn_request_unlock"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="🔓  Request Unlock"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#1A73E8"
+            android:textAllCaps="false"
+            android:layout_marginBottom="12dp"/>
+
+        <Button
+            android:id="@+id/btn_call_support"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:text="📞  Call Support"
+            android:textSize="16sp"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#444444"
+            android:textAllCaps="false"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#333333"
+            android:layout_marginBottom="16dp"/>
+
+        <!-- ═══ Branding ═══ -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Scarlet Technical"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textColor="#DC143C"
             android:textStyle="bold"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="4dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Device Management Services"
-            android:textSize="14sp"
-            android:textColor="#CCCCCC"
-            android:layout_marginBottom="24dp"/>
+            android:textSize="12sp"
+            android:textColor="#999999"
+            android:layout_marginBottom="12dp"/>
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Contact Support:"
-            android:textSize="14sp"
-            android:textColor="#CCCCCC"
-            android:layout_marginBottom="8dp"/>
-
-        <TextView
+            android:id="@+id/support_phone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="(765) 555-0100"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textColor="#FFFFFF"
             android:textStyle="bold"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="24dp"/>
 
+        <!-- Footer -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="scarlet-technical.polsia.app"
-            android:textSize="14sp"
-            android:textColor="#DC143C"
+            android:text="This device is managed by Scarlet Technical\nUnauthorized use is prohibited"
+            android:textSize="10sp"
+            android:textColor="#666666"
+            android:gravity="center"
             android:layout_marginBottom="16dp"/>
 
     </LinearLayout>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="This device is managed by Scarlet Technical\nUnauthorized use is prohibited"
-        android:textSize="11sp"
-        android:textColor="#888888"
-        android:gravity="center"
-        android:layout_marginBottom="16dp"/>
-
-</RelativeLayout>
+</ScrollView>

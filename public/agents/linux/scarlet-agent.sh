@@ -116,7 +116,7 @@ if [ "$LOCK_STATUS" = "locked" ] && [ "$CMD_ACTION" != "lock" ]; then
     kill -0 "$LOCK_PID" 2>/dev/null && LOCK_RUNNING=true
   fi
   if [ "$LOCK_RUNNING" = "false" ]; then
-    DEFAULT_MSG="This device has been locked due to a missed payment. Please contact Scarlet Technical at (765) 555-0100 or visit scarlet-technical.polsia.app"
+    DEFAULT_MSG="This device has been locked due to a missed payment. Please contact Scarlet Technical at (765) 555-0100 or visit scarlet-technical.onrender.com"
     nohup bash "$LOCK_SCRIPT" "$DEFAULT_MSG" > /dev/null 2>&1 &
     echo $! > "$LOCK_PID_FILE"
     log "Re-applied lock overlay"

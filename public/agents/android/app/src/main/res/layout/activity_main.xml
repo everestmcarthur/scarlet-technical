@@ -92,7 +92,7 @@
                 android:id="@+id/server_url_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="https://scarlet-technical.polsia.app"
+                android:hint="https://scarlet-technical.onrender.com"
                 android:inputType="textUri"
                 android:padding="12dp"
                 android:background="#F5F5F5"

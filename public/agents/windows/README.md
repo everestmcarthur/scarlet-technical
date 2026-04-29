@@ -45,7 +45,7 @@ Background service that survives reboots, shows a full-screen lock overlay on mi
 When the admin issues a `lock` command:
 - The agent launches a **full-screen WPF overlay** (black background, red "DEVICE LOCKED" text)
 - Shows the custom payment message from the server
-- Shows contact info: `(765) 555-0100` and `scarlet-technical.polsia.app`
+- Shows contact info: `(765) 555-0100` and `scarlet-technical.onrender.com`
 - Blocks Alt+F4, Escape, and window close events
 - On every subsequent heartbeat, if lock_status=locked and no overlay is running, it re-launches the overlay
 
@@ -68,7 +68,7 @@ When the admin issues an `unlock` command:
 
 - Windows 7+ (PowerShell 3+)
 - Administrator rights to install
-- HTTPS outbound (port 443) to `scarlet-technical.polsia.app`
+- HTTPS outbound (port 443) to `scarlet-technical.onrender.com`
 
 ---
 

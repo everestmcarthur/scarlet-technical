@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 public class MainActivity extends Activity {
     private static final int REQUEST_CODE_ENABLE_ADMIN = 1;
     public static final String PREFS_NAME = "ScarletAgentPrefs";
-    public static final String DEFAULT_SERVER_URL = "https://scarlet-technical.polsia.app";
+    public static final String DEFAULT_SERVER_URL = "https://scarlet-technical.onrender.com";
 
     private DevicePolicyManager devicePolicyManager;
     private ComponentName adminComponent;

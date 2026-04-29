@@ -3943,7 +3943,7 @@ async function issueDeviceCommand(deviceId, command, hostname) {
   if (command === 'lock') {
     lockMessage = prompt(
       'Custom lock message (leave blank for default):',
-      'This device has been locked due to a missed payment. Please contact Scarlet Technical at (765) 555-0100 or visit scarlet-technical.polsia.app to resolve your account.'
+      'This device has been locked due to a missed payment. Please contact Scarlet Technical at (765) 555-0100 or visit scarlet-technical.onrender.com to resolve your account.'
     );
     if (lockMessage === null) return; // cancelled
   }
@@ -6005,7 +6005,7 @@ async function openRepairDetailModal(repairId, customerId) {
     <button class="btn btn-primary btn-sm" onclick="saveWarranty(${repairId},${customerId})">Save Warranty Settings</button>`;
 
   // QR HTML
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent('https://scarlet-technical.polsia.app/admin#repair-'+repairId)}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent('https://scarlet-technical.onrender.com/admin#repair-'+repairId)}`;
   const qrHTML = `
     <div style="display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap">
       <div style="text-align:center">
@@ -6320,7 +6320,7 @@ async function saveWarranty(repairId, customerId) {
 
 // QR label print
 function printQRLabel(repairId) {
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent('https://scarlet-technical.polsia.app/admin#repair-'+repairId)}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent('https://scarlet-technical.onrender.com/admin#repair-'+repairId)}`;
   const w = window.open('', '_blank', 'width=400,height=500');
   w.document.write(`<!DOCTYPE html><html><head><title>QR Label - Repair ${repairId}</title>
   <style>body{font-family:sans-serif;text-align:center;padding:20px;margin:0}@media print{.no-print{display:none}}</style></head>

@@ -77,7 +77,7 @@ adb shell am start -n com.scarlet.agent/.MainActivity
    - Review permissions → Activate
 
 2. **Enter Server Details**
-   - Server URL: `https://scarlet-technical.polsia.app` (no trailing slash)
+   - Server URL: `https://scarlet-technical.onrender.com` (no trailing slash)
    - Enrollment Token: From management portal
    - Tap "Enroll Device"
 
@@ -168,6 +168,6 @@ Request:
 
 **Scarlet Technical**
 - Phone: (765) 555-0100
-- Web: scarlet-technical.polsia.app
+- Web: scarlet-technical.onrender.com
 
 © 2026 Scarlet Technical. Proprietary software for authorized use only.

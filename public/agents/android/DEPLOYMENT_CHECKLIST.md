@@ -146,7 +146,7 @@ If critical issues found:
 
 **Device Issues:**
 - Field Support: (765) 555-0100
-- Portal: scarlet-technical.polsia.app
+- Portal: scarlet-technical.onrender.com
 
 ## Version History
 
