@@ -163,11 +163,27 @@ cron.schedule('*/10 * * * *', async () => {
   }
 });
 
-// ─── Start Server ────────────────────────────────────────────────────────────
+// ─── Run Migrations & Start Server ──────────────────────────────────────────
+async function runMigrations() {
+  try {
+    const migratePath = require.resolve('./migrate.js');
+    delete require.cache[migratePath]; // ensure fresh run
+    // Run migrate.js as a child process so it gets its own context
+    const { execSync } = require('child_process');
+    execSync('node migrate.js', { stdio: 'inherit', cwd: __dirname, timeout: 60000 });
+    logger.info('Migrations completed successfully');
+  } catch (err) {
+    logger.error({ err: err.message }, 'Migration failed — starting server anyway (tables may already exist)');
+  }
+}
+
 async function start() {
   try {
     await checkConnection();
     logger.info('Database connected');
+
+    // Run migrations before starting
+    await runMigrations();
 
     app.listen(PORT, () => {
       logger.info({ port: PORT, env: process.env.NODE_ENV || 'development' },
