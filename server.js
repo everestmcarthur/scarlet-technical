@@ -115,6 +115,10 @@ app.use(require('./routes/sms-webhook'));
 // New v3.0 feature routes
 app.use(require('./routes/admin/support'));
 app.use(require('./routes/admin/operations'));
+app.use(require('./routes/admin/billing'));
+app.use(require('./routes/admin/repair-workflow'));
+app.use(require('./routes/admin/analytics'));
+app.use(require('./routes/admin/scheduling'));
 
 // Device agent API
 app.use(require('./routes/agent/index'));

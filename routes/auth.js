@@ -10,6 +10,7 @@ const { requireAdmin } = require('../middleware/auth');
 const { authLimiter } = require('../middleware/security');
 const logger = require('../lib/logger');
 
+const crypto = require('crypto');
 const router = Router();
 
 // ─── Admin Login ─────────────────────────────────────────────────────────────
@@ -64,7 +65,86 @@ router.post('/admin/setup', authLimiter, async (req, res) => {
   }
 });
 
-// ─── Admin Password Recovery ────────────────────────────────────────────────
+// ─── Forgot Password (email-based) ──────────────────────────────────────────
+router.get('/admin/forgot-password', (req, res) => {
+  res.sendFile(path.join(__dirname, '..', 'public/admin/forgot-password.html'));
+});
+
+router.post('/admin/forgot-password', authLimiter, async (req, res) => {
+  const { email } = req.body;
+  if (!email) return res.status(400).json({ error: 'Email required' });
+  try {
+    const result = await pool.query('SELECT id, email FROM admin_users WHERE LOWER(email) = LOWER($1)', [email]);
+    // Always return success to prevent email enumeration
+    if (!result.rows.length) {
+      logger.info({ email }, 'Forgot password attempt for non-existent email');
+      return res.json({ success: true });
+    }
+    const admin = result.rows[0];
+    // Generate a secure reset token
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+    // Store token in DB
+    await pool.query(
+      `UPDATE admin_users SET reset_token = $1, reset_token_expires = $2 WHERE id = $3`,
+      [token, expiresAt, admin.id]
+    );
+    // Send reset email
+    const siteUrl = process.env.SITE_URL || `${req.protocol}://${req.get('host')}`;
+    const resetUrl = `${siteUrl}/admin/forgot-password?token=${token}`;
+    try {
+      const { sendEmail } = require('../lib/email');
+      await sendEmail({
+        to: admin.email,
+        subject: 'Password Reset — Scarlet Technical',
+        html: `
+          <div style="font-family:sans-serif;max-width:500px;margin:0 auto">
+            <h2 style="color:#C41E3A">Password Reset Request</h2>
+            <p>You requested a password reset for your Scarlet Technical admin account.</p>
+            <p><a href="${resetUrl}" style="display:inline-block;padding:12px 24px;background:#C41E3A;color:#fff;text-decoration:none;border-radius:6px;font-weight:600">Reset Password</a></p>
+            <p style="color:#6B7280;font-size:13px">This link expires in 1 hour. If you didn't request this, ignore this email.</p>
+            <p style="color:#6B7280;font-size:12px">Or copy this link: ${resetUrl}</p>
+          </div>
+        `
+      });
+      logger.info({ email: admin.email }, 'Password reset email sent');
+    } catch (emailErr) {
+      logger.error({ err: emailErr }, 'Failed to send reset email');
+      // Still return success — log the URL for debugging
+      logger.info({ resetUrl }, 'Reset URL (email failed)');
+    }
+    res.json({ success: true });
+  } catch (err) {
+    logger.error({ err }, 'Forgot password error');
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+router.post('/admin/reset-password', authLimiter, async (req, res) => {
+  const { token, new_password } = req.body;
+  if (!token || !new_password) return res.status(400).json({ error: 'Token and new_password required' });
+  if (new_password.length < 8) return res.status(400).json({ error: 'Password must be at least 8 characters' });
+  try {
+    const result = await pool.query(
+      `SELECT id, email FROM admin_users WHERE reset_token = $1 AND reset_token_expires > NOW()`,
+      [token]
+    );
+    if (!result.rows.length) return res.status(400).json({ error: 'Invalid or expired reset token' });
+    const admin = result.rows[0];
+    const hash = await bcrypt.hash(new_password, 12);
+    await pool.query(
+      `UPDATE admin_users SET password_hash = $1, reset_token = NULL, reset_token_expires = NULL, last_password_change = NOW() WHERE id = $2`,
+      [hash, admin.id]
+    );
+    logger.info({ email: admin.email }, 'Password reset via email token');
+    res.json({ success: true });
+  } catch (err) {
+    logger.error({ err }, 'Reset password error');
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+// ─── Admin Password Recovery (setup-key based, legacy) ──────────────────────
 router.post('/admin/recover-password', authLimiter, async (req, res) => {
   const { email, new_password, setup_key } = req.body;
   const expectedKey = process.env.ADMIN_SETUP_KEY;

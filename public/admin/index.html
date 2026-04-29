@@ -404,6 +404,39 @@ input, select, textarea { font-family: inherit; }
 .list-item { transition: background .15s; }
 .list-item:hover { background: var(--gray-50); }
 
+/* Kanban Board */
+.kanban-board { display: flex; gap: 12px; overflow-x: auto; padding: 12px 0; min-height: 400px; }
+.kanban-col { flex: 0 0 280px; background: var(--gray-50); border-radius: 8px; padding: 8px; }
+.kanban-col-title { font-weight: 600; font-size: 13px; padding: 6px 8px; text-transform: uppercase; letter-spacing: .03em; display: flex; justify-content: space-between; align-items: center; }
+.kanban-col-title .count { background: var(--gray-200); color: var(--gray-600); font-size: 11px; padding: 1px 7px; border-radius: 10px; }
+.kanban-card { background: var(--white); border-radius: 6px; padding: 10px; margin-top: 8px; box-shadow: 0 1px 3px rgba(0,0,0,.08); cursor: pointer; transition: box-shadow .15s; }
+.kanban-card:hover { box-shadow: 0 3px 8px rgba(0,0,0,.12); }
+.kanban-card .card-title { font-weight: 500; font-size: 13px; margin-bottom: 4px; }
+.kanban-card .card-meta { font-size: 11px; color: var(--gray-500); }
+.kanban-card .priority-badge { font-size: 10px; padding: 1px 6px; border-radius: 3px; font-weight: 600; }
+.priority-urgent { background: #fee2e2; color: #dc2626; }
+.priority-high { background: #fff3cd; color: #d97706; }
+.priority-normal { background: #e0f2fe; color: #0369a1; }
+.priority-low { background: #f0fdf4; color: #16a34a; }
+
+/* Stat cards */
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.stat-card { background: var(--white); border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px; }
+.stat-card .stat-label { font-size: 12px; color: var(--gray-500); text-transform: uppercase; letter-spacing: .04em; }
+.stat-card .stat-value { font-size: 28px; font-weight: 700; margin-top: 4px; }
+.stat-card .stat-sub { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+.stat-card.positive .stat-value { color: #16a34a; }
+.stat-card.negative .stat-value { color: #dc2626; }
+
+/* Global Search */
+.global-search-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:9998; }
+.global-search-box { position:fixed; top:15%; left:50%; transform:translateX(-50%); width:90%; max-width:600px; background:var(--white); border-radius:12px; z-index:9999; box-shadow:0 20px 60px rgba(0,0,0,.25); overflow:hidden; }
+.global-search-input { width:100%; padding:16px 20px; border:none; font-size:16px; outline:none; }
+.global-search-results { max-height:400px; overflow-y:auto; border-top:1px solid var(--gray-200); }
+.search-result-item { padding:10px 20px; cursor:pointer; display:flex; align-items:center; gap:10px; transition:background .1s; }
+.search-result-item:hover { background:var(--gray-50); }
+.search-result-type { font-size:10px; text-transform:uppercase; background:var(--gray-100); padding:2px 6px; border-radius:3px; font-weight:600; color:var(--gray-500); }
+
 /* ===== MODALS ===== */
 #modal-overlay {
   display: none;
@@ -991,6 +1024,13 @@ select.form-control {
     </header>
 
     <!-- PAGE CONTENT -->
+    <!-- Global Search Overlay -->
+    <div class="global-search-overlay" id="global-search-overlay" onclick="closeGlobalSearch()"></div>
+    <div class="global-search-box" id="global-search-box" style="display:none">
+      <input type="text" class="global-search-input" id="global-search-input" placeholder="Search customers, repairs, tickets, invoices..." oninput="debounceGlobalSearch(this.value)">
+      <div class="global-search-results" id="global-search-results"></div>
+    </div>
+
     <main id="content">
       <!-- DASHBOARD -->
       <div id="tab-dashboard" class="tab-panel active">
@@ -1058,15 +1098,16 @@ select.form-control {
 
       <!-- ANALYTICS -->
       <div id="tab-analytics" class="tab-panel">
-        <div class="export-bar">
-          <a href="/admin/api/export/customers" class="btn btn-export">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Export Customers CSV
-          </a>
-          <a href="/admin/api/export/payments" class="btn btn-export">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Export Payments CSV
-          </a>
+        <div class="tabs-row">
+          <button class="tab-btn active" onclick="loadAnalyticsView('executive',this)">Executive</button>
+          <button class="tab-btn" onclick="loadAnalyticsView('revenue',this)">Revenue</button>
+          <button class="tab-btn" onclick="loadAnalyticsView('repairs',this)">Repairs</button>
+          <button class="tab-btn" onclick="loadAnalyticsView('customers',this)">Customers</button>
+          <button class="tab-btn" onclick="loadAnalyticsView('inventory',this)">Inventory</button>
+        </div>
+        <div class="export-bar" style="margin-top:8px">
+          <a href="/admin/api/export/customers" class="btn btn-export">Export Customers</a>
+          <a href="/admin/api/export/payments" class="btn btn-export">Export Payments</a>
         </div>
         <div id="analytics-content">
           <div class="loading"><div class="spinner"></div></div>
@@ -1075,8 +1116,25 @@ select.form-control {
 
       <!-- REPAIR REQUESTS -->
       <div id="tab-repair-requests" class="tab-panel">
-        <div class="table-wrap" id="repair-requests-table-wrap">
-          <div class="loading"><div class="spinner"></div></div>
+        <div class="tabs-row" style="margin-bottom:12px">
+          <button class="tab-btn active" onclick="switchRepairView('table',this)">Table View</button>
+          <button class="tab-btn" onclick="switchRepairView('kanban',this)">Kanban Board</button>
+          <button class="tab-btn" onclick="switchRepairView('aging',this)">Aging Alerts</button>
+          <button class="tab-btn" onclick="switchRepairView('workload',this)">Tech Workload</button>
+        </div>
+        <div id="repair-table-view">
+          <div class="table-wrap" id="repair-requests-table-wrap">
+            <div class="loading"><div class="spinner"></div></div>
+          </div>
+        </div>
+        <div id="repair-kanban-view" style="display:none">
+          <div id="kanban-board" class="kanban-board"></div>
+        </div>
+        <div id="repair-aging-view" style="display:none">
+          <div id="aging-list"></div>
+        </div>
+        <div id="repair-workload-view" style="display:none">
+          <div id="workload-list"></div>
         </div>
       </div>
 
@@ -7367,6 +7425,161 @@ function timeAgo(dateStr) {
   const days = Math.floor(hrs / 24);
   return days + 'd ago';
 }
+
+// ════════════════════════════════════════════════════════════════════════════
+// v3.2: Analytics, Kanban, Global Search, Repair Workflow
+// ════════════════════════════════════════════════════════════════════════════
+
+// ── Analytics Views ───────────────────────────────────────────────────────
+async function loadAnalyticsView(view, btn) {
+  if (btn) { const p = btn.closest('.tabs-row'); p.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+  const el = document.getElementById('analytics-content');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    if (view === 'executive') {
+      const data = await api('/api/admin/analytics/executive');
+      el.innerHTML = `
+        <div class="stat-grid">
+          <div class="stat-card"><div class="stat-label">Total Customers</div><div class="stat-value">${data.customers?.total || 0}</div><div class="stat-sub">+${data.customers?.new_7d || 0} this week</div></div>
+          <div class="stat-card"><div class="stat-label">Active Repairs</div><div class="stat-value">${data.repairs?.total_active || 0}</div><div class="stat-sub">${data.repairs?.completed_today || 0} completed today</div></div>
+          <div class="stat-card positive"><div class="stat-label">Revenue Today</div><div class="stat-value">$${(data.revenue_today || 0).toFixed(2)}</div></div>
+          <div class="stat-card"><div class="stat-label">Open Tickets</div><div class="stat-value">${data.tickets?.open_tickets || 0}</div><div class="stat-sub">${data.tickets?.overdue || 0} overdue</div></div>
+          <div class="stat-card"><div class="stat-label">Appointments (7d)</div><div class="stat-value">${data.appointments_7d || 0}</div></div>
+          <div class="stat-card"><div class="stat-label">Avg Repair Time</div><div class="stat-value">${data.repairs?.avg_completion_hours ? Math.round(data.repairs.avg_completion_hours) + 'h' : 'N/A'}</div></div>
+        </div>
+        <div class="export-bar" style="margin-top:12px">
+          <a href="/admin/api/export/customers" class="btn btn-export">Export Customers</a>
+          <a href="/admin/api/export/payments" class="btn btn-export">Export Payments</a>
+        </div>`;
+    } else if (view === 'revenue') {
+      const data = await api('/api/admin/analytics/revenue?period=month');
+      let rows = (data||[]).map(r => `<tr><td>${new Date(r.period).toLocaleDateString()}</td><td class="text-right">$${r.revenue.toFixed(2)}</td><td class="text-right">$${r.expenses.toFixed(2)}</td><td class="text-right" style="color:${r.profit>=0?'#16a34a':'#dc2626'}">$${r.profit.toFixed(2)}</td></tr>`).join('');
+      el.innerHTML = `<div class="card" style="margin-top:12px"><table class="data-table"><thead><tr><th>Period</th><th class="text-right">Revenue</th><th class="text-right">Expenses</th><th class="text-right">Profit</th></tr></thead><tbody>${rows || '<tr><td colspan="4" style="text-align:center;padding:20px">No data yet</td></tr>'}</tbody></table></div>`;
+    } else if (view === 'repairs') {
+      const data = await api('/api/admin/analytics/repairs');
+      let statusHtml = (data.by_status||[]).map(r => `<div class="stat-card"><div class="stat-label">${r.status}</div><div class="stat-value">${r.count}</div></div>`).join('');
+      let techHtml = (data.by_technician||[]).map(r => `<tr><td>${r.full_name||r.username}</td><td>${r.total}</td><td>${r.completed}</td><td>${r.avg_hours ? Math.round(r.avg_hours)+'h' : 'N/A'}</td></tr>`).join('');
+      el.innerHTML = `<div class="stat-grid">${statusHtml}</div>
+        <h3 style="margin:16px 0 8px;font-size:14px">By Technician</h3>
+        <div class="card"><table class="data-table"><thead><tr><th>Technician</th><th>Total</th><th>Completed</th><th>Avg Time</th></tr></thead><tbody>${techHtml || '<tr><td colspan="4" style="text-align:center;padding:20px">No tech assignments yet</td></tr>'}</tbody></table></div>`;
+    } else if (view === 'customers') {
+      const data = await api('/api/admin/analytics/customers');
+      let topHtml = (data.top_customers||[]).map(r => `<tr><td>${esc(r.name)}</td><td>${r.email||''}</td><td>${r.total_repairs}</td><td>$${parseFloat(r.total_spent||0).toFixed(2)}</td></tr>`).join('');
+      el.innerHTML = `<div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">Total Customers</div><div class="stat-value">${data.retention?.total || 0}</div></div>
+        <div class="stat-card"><div class="stat-label">Returning</div><div class="stat-value">${data.retention?.returning || 0}</div></div>
+      </div>
+      <h3 style="margin:16px 0 8px;font-size:14px">Top Customers by Revenue</h3>
+      <div class="card"><table class="data-table"><thead><tr><th>Name</th><th>Email</th><th>Repairs</th><th>Spent</th></tr></thead><tbody>${topHtml || '<tr><td colspan="4" style="text-align:center;padding:20px">No data yet</td></tr>'}</tbody></table></div>`;
+    } else if (view === 'inventory') {
+      const data = await api('/api/admin/analytics/inventory');
+      let lowHtml = (data.low_stock||[]).map(r => `<tr><td>${esc(r.name)}</td><td>${r.sku||''}</td><td style="color:#dc2626;font-weight:600">${r.quantity}</td><td>${r.reorder_level||0}</td></tr>`).join('');
+      el.innerHTML = `<div class="stat-grid">
+        <div class="stat-card"><div class="stat-label">Total Items</div><div class="stat-value">${data.valuation?.total_items || 0}</div></div>
+        <div class="stat-card"><div class="stat-label">Total Units</div><div class="stat-value">${data.valuation?.total_units || 0}</div></div>
+        <div class="stat-card"><div class="stat-label">Inventory Value</div><div class="stat-value">$${parseFloat(data.valuation?.total_value||0).toFixed(2)}</div></div>
+      </div>
+      <h3 style="margin:16px 0 8px;font-size:14px;color:#dc2626">⚠ Low Stock Items</h3>
+      <div class="card"><table class="data-table"><thead><tr><th>Name</th><th>SKU</th><th>Qty</th><th>Reorder Level</th></tr></thead><tbody>${lowHtml || '<tr><td colspan="4" style="text-align:center;padding:20px">All stocked!</td></tr>'}</tbody></table></div>`;
+    }
+  } catch (e) { el.innerHTML = `<div class="card" style="padding:20px;text-align:center">Error loading analytics: ${e.message}</div>`; }
+}
+
+// ── Repair Kanban Board ───────────────────────────────────────────────────
+function switchRepairView(view, btn) {
+  if (btn) { const p = btn.closest('.tabs-row'); p.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+  document.getElementById('repair-table-view').style.display = view === 'table' ? '' : 'none';
+  document.getElementById('repair-kanban-view').style.display = view === 'kanban' ? '' : 'none';
+  document.getElementById('repair-aging-view').style.display = view === 'aging' ? '' : 'none';
+  document.getElementById('repair-workload-view').style.display = view === 'workload' ? '' : 'none';
+  if (view === 'kanban') loadKanban();
+  if (view === 'aging') loadAging();
+  if (view === 'workload') loadWorkload();
+}
+
+async function loadKanban() {
+  const el = document.getElementById('kanban-board');
+  el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+  try {
+    const data = await api('/api/admin/repair-kanban');
+    const statuses = ['received','diagnosed','in_progress','waiting_parts','ready','on_hold'];
+    const labels = { received:'Received', diagnosed:'Diagnosed', in_progress:'In Progress', waiting_parts:'Waiting Parts', ready:'Ready', on_hold:'On Hold' };
+    el.innerHTML = statuses.map(s => {
+      const items = data[s] || [];
+      return `<div class="kanban-col">
+        <div class="kanban-col-title">${labels[s]||s} <span class="count">${items.length}</span></div>
+        ${items.map(r => `<div class="kanban-card" onclick="switchTab('repair-requests')">
+          <div class="card-title">#${r.id} ${esc(r.device_type||'Device')}</div>
+          <div class="card-meta">${esc(r.customer_name||'Unknown')}</div>
+          <div style="margin-top:4px"><span class="priority-badge priority-${r.priority||'normal'}">${(r.priority||'normal').toUpperCase()}</span>
+          ${r.tech_name ? `<span style="font-size:10px;color:var(--gray-500);margin-left:6px">👤 ${esc(r.tech_name)}</span>`:''}</div>
+        </div>`).join('')}
+      </div>`;
+    }).join('');
+  } catch (e) { el.innerHTML = `<div class="card" style="padding:20px">Error: ${e.message}</div>`; }
+}
+
+async function loadAging() {
+  const el = document.getElementById('aging-list');
+  try {
+    const data = await api('/api/admin/aging-repairs');
+    if (!data.length) { el.innerHTML = '<div class="card" style="padding:20px;text-align:center">✅ No aging repairs!</div>'; return; }
+    el.innerHTML = `<div class="card"><table class="data-table"><thead><tr><th>ID</th><th>Customer</th><th>Status</th><th>Days Open</th><th>Days Since Update</th></tr></thead><tbody>
+    ${data.map(r => `<tr style="background:${r.days_since_update>7?'#fef2f2':''}"><td>#${r.id}</td><td>${esc(r.customer_name||'')}</td><td>${r.status}</td><td>${Math.round(r.days_open||0)}</td><td style="font-weight:600;color:#dc2626">${Math.round(r.days_since_update||0)}</td></tr>`).join('')}
+    </tbody></table></div>`;
+  } catch (e) { el.innerHTML = `<div class="card" style="padding:20px">Error: ${e.message}</div>`; }
+}
+
+async function loadWorkload() {
+  const el = document.getElementById('workload-list');
+  try {
+    const data = await api('/api/admin/tech-workload');
+    el.innerHTML = `<div class="stat-grid">${data.map(t => `<div class="stat-card">
+      <div class="stat-label">👤 ${esc(t.full_name||t.username)}</div>
+      <div class="stat-value">${t.active_repairs||0}</div>
+      <div class="stat-sub">active repairs • ${t.completed_today||0} done today</div>
+      ${t.total_estimated_minutes ? `<div class="stat-sub">${Math.round(t.total_estimated_minutes/60)}h estimated</div>`:''}</div>`).join('')}</div>`;
+  } catch (e) { el.innerHTML = `<div class="card" style="padding:20px">Error: ${e.message}</div>`; }
+}
+
+// ── Global Search ─────────────────────────────────────────────────────────
+let searchTimer;
+function openGlobalSearch() {
+  document.getElementById('global-search-overlay').style.display = 'block';
+  document.getElementById('global-search-box').style.display = 'block';
+  document.getElementById('global-search-input').value = '';
+  document.getElementById('global-search-input').focus();
+  document.getElementById('global-search-results').innerHTML = '';
+}
+function closeGlobalSearch() {
+  document.getElementById('global-search-overlay').style.display = 'none';
+  document.getElementById('global-search-box').style.display = 'none';
+}
+function debounceGlobalSearch(q) {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => runGlobalSearch(q), 300);
+}
+async function runGlobalSearch(q) {
+  const el = document.getElementById('global-search-results');
+  if (!q || q.length < 2) { el.innerHTML = ''; return; }
+  try {
+    const results = await api(`/api/admin/search?q=${encodeURIComponent(q)}`);
+    if (!results.length) { el.innerHTML = '<div style="padding:16px;text-align:center;color:var(--gray-400)">No results</div>'; return; }
+    el.innerHTML = results.map(r => {
+      const name = r.name || r.subject || r.device_type || r.description || `#${r.id}`;
+      const tabMap = { customer:'customers', repair:'repair-requests', ticket:'tickets', invoice:'invoices' };
+      return `<div class="search-result-item" onclick="closeGlobalSearch();switchTab('${tabMap[r.type]||'dashboard'}')">
+        <span class="search-result-type">${r.type}</span>
+        <span>${esc(name)}</span>
+        <span style="color:var(--gray-400);font-size:11px;margin-left:auto">${r.status||r.email||''}</span></div>`;
+    }).join('');
+  } catch (e) { el.innerHTML = '<div style="padding:16px;text-align:center;color:#dc2626">Search error</div>'; }
+}
+// Keyboard shortcut: Ctrl+K or Cmd+K opens search
+document.addEventListener('keydown', function(e) {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openGlobalSearch(); }
+  if (e.key === 'Escape') closeGlobalSearch();
+});
 
 </script>
 </body>
