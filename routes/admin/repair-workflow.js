@@ -13,7 +13,7 @@ router.use(requireAdmin);
 router.get('/admin/api/repair-kanban', async (req, res) => {
   try {
     const { rows } = await pool.query(
-      `SELECT rr.*, c.name as customer_name, au.username as tech_name
+      `SELECT rr.*, c.name as customer_name, au.name as tech_name
        FROM repair_requests rr
        LEFT JOIN customers c ON rr.customer_id = c.id
        LEFT JOIN admin_users au ON rr.assigned_tech = au.id
@@ -154,14 +154,14 @@ router.get('/admin/api/aging-repairs', async (req, res) => {
 router.get('/admin/api/tech-workload', async (req, res) => {
   try {
     const { rows } = await pool.query(
-      `SELECT au.id, au.username, au.full_name,
+      `SELECT au.id, au.name, au.display_name,
        COUNT(rr.id) FILTER (WHERE rr.status NOT IN ('completed','cancelled')) as active_repairs,
        SUM(rr.estimated_minutes) FILTER (WHERE rr.status NOT IN ('completed','cancelled')) as total_estimated_minutes,
        COUNT(rr.id) FILTER (WHERE rr.status = 'completed' AND rr.updated_at >= CURRENT_DATE) as completed_today
        FROM admin_users au
        LEFT JOIN repair_requests rr ON rr.assigned_tech = au.id
        WHERE au.active = true
-       GROUP BY au.id, au.username, au.full_name
+       GROUP BY au.id, au.name, au.display_name
        ORDER BY active_repairs DESC`
     );
     res.json(rows);

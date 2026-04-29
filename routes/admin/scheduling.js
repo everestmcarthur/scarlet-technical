@@ -13,8 +13,8 @@ router.use(requireAdmin);
 router.get('/admin/api/tech-availability', async (req, res) => {
   try {
     const { rows } = await pool.query(
-      `SELECT ta.*, au.username, au.full_name FROM tech_availability ta
-       JOIN admin_users au ON ta.admin_user_id = au.id ORDER BY au.username, ta.day_of_week, ta.start_time`
+      `SELECT ta.*, au.name, au.display_name FROM tech_availability ta
+       JOIN admin_users au ON ta.admin_user_id = au.id ORDER BY au.name, ta.day_of_week, ta.start_time`
     );
     res.json(rows);
   } catch (e) { res.status(500).json({ error: e.message }); }
@@ -98,7 +98,7 @@ router.post('/admin/api/sla-policies', async (req, res) => {
 router.get('/admin/api/escalation-rules', async (req, res) => {
   try {
     const { rows } = await pool.query(
-      `SELECT er.*, au.username as escalate_to_name FROM escalation_rules er
+      `SELECT er.*, au.name as escalate_to_name FROM escalation_rules er
        LEFT JOIN admin_users au ON er.escalate_to = au.id ORDER BY er.created_at`
     );
     res.json(rows);
@@ -121,7 +121,7 @@ router.post('/admin/api/escalation-rules', async (req, res) => {
 router.get('/admin/api/inventory/:id/movements', async (req, res) => {
   try {
     const { rows } = await pool.query(
-      `SELECT im.*, au.username as user_name FROM inventory_movements im
+      `SELECT im.*, au.name as user_name FROM inventory_movements im
        LEFT JOIN admin_users au ON im.created_by = au.id
        WHERE im.inventory_id = $1 ORDER BY im.created_at DESC`,
       [req.params.id]

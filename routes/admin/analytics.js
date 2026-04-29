@@ -97,13 +97,13 @@ router.get('/admin/api/analytics/repairs', async (req, res) => {
         MIN(EXTRACT(EPOCH FROM (updated_at - created_at))/3600) as min_hours,
         MAX(EXTRACT(EPOCH FROM (updated_at - created_at))/3600) as max_hours
         FROM repair_requests WHERE status = 'completed'`),
-      pool.query(`SELECT au.username, au.full_name,
+      pool.query(`SELECT au.name, au.display_name,
         COUNT(rr.id) as total,
         COUNT(rr.id) FILTER (WHERE rr.status='completed') as completed,
         AVG(EXTRACT(EPOCH FROM (rr.updated_at - rr.created_at))/3600) FILTER (WHERE rr.status='completed') as avg_hours
         FROM admin_users au
         JOIN repair_requests rr ON rr.assigned_tech = au.id
-        GROUP BY au.id, au.username, au.full_name ORDER BY total DESC`)
+        GROUP BY au.id, au.name, au.display_name ORDER BY total DESC`)
     ]);
     
     res.json({
