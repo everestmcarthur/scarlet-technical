@@ -1,0 +1,60 @@
+services:
+  - type: web
+    name: scarlet-technical
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run migrate
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: ADMIN_SETUP_KEY
+        generateValue: true
+      - key: SITE_URL
+        value: https://jarviscli.dev
+      - key: PORT
+        value: 10000
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: SENTRY_DSN
+        value: https://b1decf9ab3a6405e4d94b499c53bcc37@o4510960090873856.ingest.us.sentry.io/4511303978057728
+      - key: DISCORD_WEBHOOK_REPAIRS
+        sync: false
+      - key: DISCORD_WEBHOOK_PAYMENTS
+        sync: false
+      - key: DISCORD_WEBHOOK_ALERTS
+        sync: false
+      - key: DISCORD_WEBHOOK_ACTIVITY
+        sync: false
+      - key: DISCORD_WEBHOOK_SUMMARY
+        sync: false
+      - key: TWILIO_ACCOUNT_SID
+        sync: false
+      - key: TWILIO_AUTH_TOKEN
+        sync: false
+      - key: TWILIO_FROM_NUMBER
+        sync: false
+      - key: GOOGLE_SERVICE_ACCOUNT_EMAIL
+        sync: false
+      - key: GOOGLE_PRIVATE_KEY
+        sync: false
+      - key: GDRIVE_FOLDER_CONTRACTS
+        value: 1XlZMZwPcGKpr8KmtrpC02_8aD2Oair-x
+      - key: GDRIVE_FOLDER_INVOICES
+        value: 1f2W0MIrZPpNnNvfDSws3pBPhlqIVXr-t
+      - key: GDRIVE_FOLDER_CUSTOMERS
+        value: 1IHm7d97yQKRVhdPM7PSpqW8T0J1wDjME
+      - key: GDRIVE_FOLDER_REPORTS
+        value: 1IPABBs_IWnAZZXUKGUb-iTkjLRgU04Ak
+      - key: GDRIVE_FOLDER_BACKUPS
+        value: 1R7pGl6qLWjjCOUF8-il5ygLEgKM6BXe_
+      - key: POLSIA_API_KEY
+        sync: false
+      - key: FROM_EMAIL
+        sync: false

@@ -1,0 +1,89 @@
+name: Build Android APK
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'public/agents/android/**'
+      - '.github/workflows/build-android-apk.yml'
+  workflow_dispatch:  # Allow manual trigger from GitHub Actions UI
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Gradle 7.5
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: 7.5
+          cache-disabled: false
+
+      - name: Make gradlew executable (if present)
+        run: |
+          if [ -f "public/agents/android/gradlew" ]; then
+            chmod +x public/agents/android/gradlew
+          fi
+
+      - name: Build Debug APK
+        working-directory: public/agents/android
+        run: |
+          # Use gradlew if wrapper jar exists, otherwise use global gradle
+          if [ -f "gradle/wrapper/gradle-wrapper.jar" ]; then
+            echo "Using gradlew..."
+            ./gradlew assembleDebug --no-daemon --stacktrace
+          else
+            echo "Using global gradle..."
+            gradle assembleDebug --no-daemon --stacktrace
+          fi
+
+      - name: Find and copy APK
+        run: |
+          mkdir -p public/agents/android/releases
+          APK=$(find public/agents/android/app/build/outputs/apk -name "*.apk" | head -1)
+          if [ -z "$APK" ]; then
+            echo "ERROR: No APK file found"
+            find public/agents/android/app/build -name "*.apk" 2>/dev/null || true
+            exit 1
+          fi
+          cp "$APK" public/agents/android/releases/scarlet-lock-agent.apk
+          ls -lh public/agents/android/releases/scarlet-lock-agent.apk
+          echo "APK_PATH=$APK" >> $GITHUB_ENV
+
+      - name: Commit APK to repository
+        run: |
+          git config user.name "GitHub Actions Bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add public/agents/android/releases/scarlet-lock-agent.apk
+
+          if git diff --staged --quiet; then
+            echo "✓ APK unchanged — no commit needed"
+          else
+            SIZE=$(du -sh public/agents/android/releases/scarlet-lock-agent.apk | cut -f1)
+            git commit -m "build: Android APK v$(date '+%Y.%m.%d') [${SIZE}B] [skip ci]"
+            git push
+            echo "✓ APK committed and pushed"
+          fi
+
+      - name: Upload APK as build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: scarlet-lock-agent-debug
+          path: public/agents/android/releases/scarlet-lock-agent.apk
+          if-no-files-found: error
+          retention-days: 90

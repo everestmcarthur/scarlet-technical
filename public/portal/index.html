@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Account — Scarlet Technical</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --scarlet:#C41E3A;--scarlet-dark:#9E1830;--scarlet-light:#FDF2F4;
+  --ink:#111;--muted:#6B7280;--border:#E5E7EB;--paper:#F4F6FA;--white:#fff;
+  --green:#15803D;--green-light:#F0FDF4;--red:#DC2626;--red-light:#FEF2F2;
+  --blue:#1D4ED8;--blue-light:#EFF6FF;--orange:#C2410C;--orange-light:#FFF7ED;
+  --radius:10px;--shadow:0 1px 3px rgba(0,0,0,.08);--shadow-md:0 4px 12px rgba(0,0,0,.1);
+}
+body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);min-height:100vh}
+
+/* ── NAV ── */
+nav{background:#fff;border-bottom:1px solid var(--border);padding:.875rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;box-shadow:var(--shadow)}
+.brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--ink)}
+.brand-icon{width:34px;height:34px;background:var(--scarlet);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.brand-name{font-weight:700;font-size:1.05rem}.brand-name span{color:var(--scarlet)}
+.nav-right{display:flex;align-items:center;gap:.75rem}
+.nav-user{font-size:.875rem;color:var(--muted)}
+.btn-sm{padding:.4rem .85rem;background:none;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:.8rem;cursor:pointer;color:var(--muted);transition:all .15s}
+.btn-sm:hover{border-color:var(--scarlet);color:var(--scarlet)}
+
+/* ── TABS ── */
+.tabs-bar{background:#fff;border-bottom:1px solid var(--border);padding:0 1.5rem;display:flex;gap:0;overflow-x:auto;scrollbar-width:none}
+.tabs-bar::-webkit-scrollbar{display:none}
+.tab-btn{padding:.85rem 1.1rem;font-size:.85rem;font-weight:500;color:var(--muted);border:none;background:none;cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;display:flex;align-items:center;gap:.4rem}
+.tab-btn.active{color:var(--scarlet);border-bottom-color:var(--scarlet)}
+.tab-btn:hover:not(.active){color:var(--ink)}
+.tab-btn .tab-badge{background:var(--scarlet);color:#fff;border-radius:100px;font-size:.65rem;padding:.1rem .4rem;font-weight:700}
+
+/* ── CONTENT ── */
+.container{max-width:820px;margin:0 auto;padding:2rem 1.5rem}
+.tab-panel{display:none}.tab-panel.active{display:block}
+.section{margin-bottom:2rem}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;gap:.75rem;flex-wrap:wrap}
+.section-title{font-size:1rem;font-weight:700;display:flex;align-items:center;gap:.5rem}
+.section-icon{width:28px;height:28px;background:var(--scarlet-light);border-radius:7px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.section-icon svg{color:var(--scarlet)}
+
+/* ── CARDS ── */
+.card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.card-empty{padding:2rem;text-align:center;color:var(--muted);font-size:.9rem}
+.card-header{padding:1rem 1.25rem;border-bottom:1px solid var(--border);font-weight:600;font-size:.95rem;display:flex;align-items:center;justify-content:space-between}
+
+/* ── REPAIR ITEMS ── */
+.repair-item{padding:1.1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}
+.repair-item:last-child{border-bottom:none}
+.repair-info h3{font-size:.9rem;font-weight:600;margin-bottom:.15rem}
+.repair-info p{font-size:.78rem;color:var(--muted);margin-bottom:.1rem}
+.repair-actions{display:flex;flex-direction:column;align-items:flex-end;gap:.5rem}
+
+/* ── BADGE ── */
+.badge{display:inline-flex;align-items:center;padding:.2rem .6rem;border-radius:100px;font-size:.7rem;font-weight:600;white-space:nowrap}
+.badge-intake{background:#F3F4F6;color:#374151}
+.badge-diagnosed{background:var(--blue-light);color:var(--blue)}
+.badge-in_repair{background:var(--orange-light);color:var(--orange)}
+.badge-ready_pickup,.badge-complete{background:var(--green-light);color:var(--green)}
+.badge-cancelled{background:#F3F4F6;color:#374151}
+.badge-paid{background:var(--green-light);color:var(--green)}
+.badge-pending{background:var(--orange-light);color:var(--orange)}
+.badge-overdue{background:var(--red-light);color:var(--red)}
+.badge-waived{background:#F3F4F6;color:#6B7280}
+.badge-open{background:#EDE9FE;color:#6D28D9}
+.badge-in_progress{background:var(--orange-light);color:var(--orange)}
+.badge-resolved{background:var(--green-light);color:var(--green)}
+.badge-closed{background:#F3F4F6;color:#6B7280}
+
+/* ── PLAN CARDS ── */
+.plan-card{border-bottom:1px solid var(--border)}
+.plan-card:last-child{border-bottom:none}
+.plan-header{padding:1.1rem 1.25rem;display:flex;align-items:center;justify-content:space-between;cursor:pointer;gap:1rem}
+.plan-header:hover{background:#fafafa}
+.plan-title{font-size:.9rem;font-weight:600;margin-bottom:.15rem}
+.plan-meta{font-size:.75rem;color:var(--muted)}
+.plan-amount{text-align:right;flex-shrink:0}
+.amount-big{font-size:1.1rem;font-weight:700;color:var(--scarlet)}
+.amount-label{font-size:.7rem;color:var(--muted)}
+.plan-body{padding:0 1.25rem 1.1rem;border-top:1px solid var(--border);display:none}
+.plan-body.open{display:block}
+.progress-bar{margin:.85rem 0 .3rem;height:7px;background:#F3F4F6;border-radius:100px;overflow:hidden}
+.progress-fill{height:100%;background:var(--scarlet);border-radius:100px;transition:width .3s}
+.progress-label{display:flex;justify-content:space-between;font-size:.73rem;color:var(--muted);margin-bottom:.75rem}
+.installments-table{width:100%;border-collapse:collapse;font-size:.82rem}
+.installments-table th{text-align:left;font-size:.68rem;text-transform:uppercase;color:var(--muted);letter-spacing:.05em;padding:.4rem .4rem;border-bottom:1px solid var(--border)}
+.installments-table td{padding:.5rem .4rem;border-bottom:1px solid #F9FAFB}
+.installments-table tr:last-child td{border-bottom:none}
+
+/* ── STATUS BANNER ── */
+.status-banner{padding:.85rem 1.25rem;border-radius:var(--radius);margin-bottom:1.5rem;font-size:.875rem;font-weight:500}
+.banner-overdue{background:var(--red-light);border:1px solid #FECACA;color:var(--red)}
+.banner-current{background:var(--green-light);border:1px solid #BBF7D0;color:var(--green)}
+
+/* ── FORMS ── */
+.form-grid{display:grid;gap:12px}
+.form-grid-2{grid-template-columns:1fr 1fr}
+.form-group{display:flex;flex-direction:column;gap:5px}
+.form-group label{font-size:.75rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.form-control{padding:.55rem .85rem;border:1px solid var(--border);border-radius:7px;font-family:inherit;font-size:.875rem;color:var(--ink);transition:border-color .15s;width:100%}
+.form-control:focus{outline:none;border-color:var(--scarlet);box-shadow:0 0 0 3px rgba(196,30,58,.08)}
+textarea.form-control{resize:vertical;min-height:80px}
+.btn-primary{padding:.6rem 1.2rem;background:var(--scarlet);color:#fff;border:none;border-radius:7px;font-family:inherit;font-size:.875rem;font-weight:600;cursor:pointer;transition:all .15s}
+.btn-primary:hover{background:var(--scarlet-dark)}
+.btn-secondary{padding:.6rem 1.2rem;background:#fff;color:var(--ink);border:1px solid var(--border);border-radius:7px;font-family:inherit;font-size:.875rem;font-weight:500;cursor:pointer;transition:all .15s}
+.btn-secondary:hover{background:#f9f9f9;border-color:#ccc}
+.btn-success{padding:.5rem 1rem;background:var(--green);color:#fff;border:none;border-radius:7px;font-family:inherit;font-size:.82rem;font-weight:600;cursor:pointer}
+
+/* ── TICKET ITEMS ── */
+.ticket-item{padding:1rem 1.25rem;border-bottom:1px solid var(--border)}
+.ticket-item:last-child{border-bottom:none}
+.ticket-subject{font-size:.9rem;font-weight:600;margin-bottom:.2rem}
+.ticket-msg{font-size:.8rem;color:var(--muted);margin-bottom:.5rem}
+.ticket-response{background:var(--green-light);border-radius:6px;padding:.6rem .85rem;font-size:.8rem;margin-top:.5rem;border-left:3px solid var(--green)}
+.ticket-meta{font-size:.72rem;color:var(--muted);display:flex;align-items:center;gap:.75rem}
+
+/* ── SATISFACTION ── */
+.sat-btn{border:1px solid var(--border);background:#fff;border-radius:8px;padding:.5rem .9rem;font-size:1.2rem;cursor:pointer;transition:all .15s}
+.sat-btn:hover{border-color:var(--scarlet)}
+.sat-btn.selected-up{background:var(--green-light);border-color:var(--green)}
+.sat-btn.selected-down{background:var(--red-light);border-color:var(--red)}
+
+/* ── TOAST ── */
+#toast-portal{position:fixed;bottom:1.25rem;right:1.25rem;z-index:9999;display:flex;flex-direction:column;gap:.5rem}
+.toast{display:flex;align-items:center;gap:.6rem;padding:.75rem 1rem;border-radius:8px;background:#1f2937;color:#fff;font-size:.82rem;box-shadow:var(--shadow-md);animation:toastIn .2s ease}
+.toast.success{background:#15803D}
+.toast.error{background:var(--red)}
+@keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+
+/* ── MODAL ── */
+#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;padding:1rem}
+#modal-overlay.open{display:flex}
+.modal{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow-md);width:100%;max-width:500px;max-height:90vh;overflow-y:auto;animation:modalIn .2s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-header{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.25rem;border-bottom:1px solid var(--border);position:sticky;top:0;background:#fff;z-index:2}
+.modal-header h3{font-size:.95rem;font-weight:700}
+.modal-close{width:26px;height:26px;border-radius:5px;background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--muted);display:flex;align-items:center;justify-content:center}
+.modal-close:hover{background:#f3f4f6}
+.modal-body{padding:1.25rem}
+.modal-footer{display:flex;justify-content:flex-end;gap:.6rem;padding:.85rem 1.25rem;border-top:1px solid var(--border);background:#fafafa}
+
+/* ── CHEVRON ── */
+.chevron{transition:transform .2s;flex-shrink:0}
+.chevron.open{transform:rotate(180deg)}
+
+footer{text-align:center;padding:1.5rem;font-size:.73rem;color:var(--muted);border-top:1px solid var(--border);margin-top:2rem}
+
+/* ── MOBILE BOTTOM NAV ── */
+#portal-bottom-nav{
+  display:none;
+  position:fixed;
+  bottom:0;left:0;right:0;
+  height:58px;
+  background:#fff;
+  border-top:1px solid var(--border);
+  z-index:50;
+  flex-direction:row;
+  box-shadow:0 -2px 10px rgba(0,0,0,.07);
+}
+#portal-bottom-nav button{
+  flex:1;background:none;border:none;
+  color:var(--muted);font-size:9px;font-weight:500;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;cursor:pointer;transition:color .15s;padding:4px 2px;
+  font-family:inherit;
+}
+#portal-bottom-nav button svg{width:20px;height:20px}
+#portal-bottom-nav button.active{color:var(--scarlet)}
+#portal-bottom-nav button .bnav-badge{
+  position:absolute;top:6px;right:calc(50% - 16px);
+  background:var(--scarlet);color:#fff;font-size:9px;font-weight:700;
+  padding:1px 5px;border-radius:10px;display:none;
+}
+@media(max-width:640px){
+  #portal-bottom-nav{display:flex}
+  body{padding-bottom:58px}
+  .tabs-bar{display:none}
+  .container{padding:1rem .875rem}
+  .form-grid-2{grid-template-columns:1fr}
+  .plan-header{flex-wrap:wrap}
+  .repair-item{flex-direction:column}
+  .repair-actions{flex-direction:row;align-items:center}
+  /* 44px minimum touch targets */
+  .btn-primary,.btn-secondary,.btn-sm,.sat-btn{min-height:44px}
+  .tab-btn{min-height:44px}
+  .form-control{min-height:44px}
+  /* No horizontal scroll */
+  body{overflow-x:hidden}
+}
+@media(max-width:600px){
+  .form-grid-2{grid-template-columns:1fr}
+  .plan-header{flex-wrap:wrap}
+  .repair-item{flex-direction:column}
+  .repair-actions{flex-direction:row;align-items:center}
+  .container{padding:1.25rem 1rem}
+}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="brand">
+    <div class="brand-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+    <span class="brand-name">Scarlet <span>Technical</span></span>
+  </a>
+  <div class="nav-right">
+    <div style="display:flex;align-items:center;gap:.5rem;cursor:pointer" onclick="switchTab('profile')" title="My Profile">
+      <div id="navAvatar" style="width:32px;height:32px;border-radius:50%;background:#C41E3A;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700;color:#fff;flex-shrink:0;letter-spacing:.02em">?</div>
+      <span class="nav-user" id="navUser"></span>
+    </div>
+    <button class="btn-sm" id="notif-bell-btn" onclick="switchTab('notifications')" title="Notifications" style="position:relative;padding:.4rem .6rem">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span id="notif-badge" style="display:none;position:absolute;top:2px;right:2px;background:#C41E3A;color:#fff;border-radius:100px;font-size:9px;font-weight:700;min-width:14px;height:14px;line-height:14px;text-align:center;padding:0 2px"></span>
+    </button>
+    <button class="btn-sm" onclick="logout()">Sign Out</button>
+  </div>
+</nav>
+
+<!-- TABS -->
+<div class="tabs-bar">
+  <button class="tab-btn active" data-tab="repairs" onclick="switchTab('repairs')">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+    Repairs
+  </button>
+  <button class="tab-btn" data-tab="payments" onclick="switchTab('payments')">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+    Payments
+  </button>
+  <button class="tab-btn" data-tab="new-repair" onclick="switchTab('new-repair')">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Request Repair
+  </button>
+  <button class="tab-btn" data-tab="tickets" onclick="switchTab('tickets')">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    Support
+    <span class="tab-badge" id="tickets-badge" style="display:none"></span>
+  </button>
+  <button class="tab-btn" data-tab="notifications" onclick="switchTab('notifications')">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+    Notifications
+    <span class="tab-badge" id="notif-tab-badge" style="display:none"></span>
+  </button>
+  <button class="tab-btn" data-tab="invoices" onclick="switchTab('invoices')">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+    Invoices
+  </button>
+  <button class="tab-btn" data-tab="profile" onclick="switchTab('profile')">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    My Profile
+  </button>
+</div>
+
+<div class="container">
+  <div id="banner" style="display:none"></div>
+
+  <!-- REPAIRS TAB -->
+  <div class="tab-panel active" id="tab-repairs">
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">
+          <div class="section-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg></div>
+          My Repairs
+        </span>
+      </div>
+      <div class="card" id="repairsCard"><div class="card-empty">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- PAYMENTS TAB -->
+  <div class="tab-panel" id="tab-payments">
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">
+          <div class="section-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          Payment Plans
+        </span>
+      </div>
+      <div class="card" id="plansCard"><div class="card-empty">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- NEW REPAIR REQUEST TAB -->
+  <div class="tab-panel" id="tab-new-repair">
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">
+          <div class="section-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div>
+          Request a New Repair
+        </span>
+      </div>
+      <div class="card">
+        <div style="padding:1.25rem">
+          <p style="font-size:.85rem;color:var(--muted);margin-bottom:1.25rem">Submit a repair request and we'll reach out to schedule it.</p>
+          <div class="form-grid">
+            <div class="form-grid form-grid-2">
+              <div class="form-group">
+                <label>Device Brand</label>
+                <input class="form-control" id="rr-brand" placeholder="e.g. Samsung, Apple" />
+              </div>
+              <div class="form-group">
+                <label>Device Type</label>
+                <select class="form-control" id="rr-type">
+                  <option value="">Select…</option>
+                  <option>Phone</option>
+                  <option>Laptop</option>
+                  <option>Tablet</option>
+                  <option>Desktop</option>
+                  <option>Other</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Issue Description *</label>
+              <textarea class="form-control" id="rr-issue" placeholder="Describe what's wrong with your device…" style="min-height:100px;"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Service Type</label>
+              <div style="display:flex;gap:8px">
+                <label style="flex:1;display:flex;align-items:center;gap:.5rem;padding:.65rem .9rem;border:2px solid var(--border);border-radius:8px;cursor:pointer;transition:border-color .15s;font-size:.875rem;font-weight:500" id="rr-svc-inperson">
+                  <input type="radio" name="rr_service_type" value="in_person" checked style="accent-color:var(--scarlet)" onchange="document.getElementById('rr-svc-inperson').style.borderColor='#C41E3A';document.getElementById('rr-svc-remote').style.borderColor='var(--border)'">
+                  🏪 In-Person
+                </label>
+                <label style="flex:1;display:flex;align-items:center;gap:.5rem;padding:.65rem .9rem;border:2px solid var(--border);border-radius:8px;cursor:pointer;transition:border-color .15s;font-size:.875rem;font-weight:500" id="rr-svc-remote">
+                  <input type="radio" name="rr_service_type" value="remote" style="accent-color:var(--scarlet)" onchange="document.getElementById('rr-svc-remote').style.borderColor='#C41E3A';document.getElementById('rr-svc-inperson').style.borderColor='var(--border)'">
+                  💻 Remote
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Preferred Contact</label>
+              <select class="form-control" id="rr-contact">
+                <option value="phone">Phone call</option>
+                <option value="text">Text message</option>
+                <option value="email">Email</option>
+                <option value="in_person">In-person</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn-primary" style="margin-top:1rem;width:100%;" onclick="submitRepairRequest()">Submit Request</button>
+          <p id="rr-success" style="display:none;color:var(--green);text-align:center;margin-top:1rem;font-size:.875rem;font-weight:600;">&#10003; Request submitted! We'll be in touch soon.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SUPPORT TICKETS TAB -->
+  <div class="tab-panel" id="tab-tickets">
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">
+          <div class="section-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+          Support Tickets
+        </span>
+        <button class="btn-primary" style="font-size:.8rem;padding:.45rem .9rem;" onclick="openNewTicketModal()">+ New Ticket</button>
+      </div>
+      <div class="card" id="ticketsCard"><div class="card-empty">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- NOTIFICATIONS TAB -->
+  <div class="tab-panel" id="tab-notifications">
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">
+          <div class="section-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div>
+          Notifications
+        </span>
+        <button class="btn-sm" onclick="markAllNotificationsRead()" id="mark-all-read-btn" style="display:none">Mark All Read</button>
+      </div>
+      <div id="notifList" class="card"><div class="card-empty">Loading...</div></div>
+    </div>
+  </div>
+
+  <!-- PROFILE TAB -->
+  <div class="tab-panel" id="tab-profile">
+    <!-- Profile Info -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">
+          <div class="section-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+          My Information
+        </span>
+      </div>
+      <div class="card">
+        <div style="padding:1.25rem">
+          <!-- Initials Avatar -->
+          <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border);">
+            <div id="profile-avatar" style="width:52px;height:52px;border-radius:50%;background:var(--scarlet);display:flex;align-items:center;justify-content:center;font-size:1.15rem;font-weight:700;color:#fff;flex-shrink:0;letter-spacing:.02em;"></div>
+            <div>
+              <div id="prof-display-name" style="font-weight:700;font-size:1rem;color:var(--ink);"></div>
+              <div id="prof-display-email" style="font-size:.8rem;color:var(--muted);margin-top:.15rem;"></div>
+            </div>
+          </div>
+          <div class="form-grid form-grid-2">
+            <div class="form-group">
+              <label>Full Name</label>
+              <input class="form-control" id="prof-name" placeholder="Your name" />
+            </div>
+            <div class="form-group">
+              <label>Phone</label>
+              <input class="form-control" id="prof-phone" placeholder="(555) 555-5555" />
+            </div>
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" class="form-control" id="prof-email" placeholder="you@example.com" />
+            </div>
+            <div class="form-group">
+              <label>Address</label>
+              <input class="form-control" id="prof-address" placeholder="Street address" />
+            </div>
+          </div>
+          <button class="btn-primary" style="margin-top:1rem;" onclick="saveProfile()">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Change Password -->
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">
+          <div class="section-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+          Change Password
+        </span>
+      </div>
+      <div class="card">
+        <div style="padding:1.25rem">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Current Password</label>
+              <input type="password" class="form-control" id="pw-current" placeholder="Your current password" />
+            </div>
+            <div class="form-group">
+              <label>New Password</label>
+              <input type="password" class="form-control" id="pw-new" placeholder="At least 6 characters" />
+            </div>
+            <div class="form-group">
+              <label>Confirm New Password</label>
+              <input type="password" class="form-control" id="pw-confirm" placeholder="Repeat new password" />
+            </div>
+          </div>
+          <button class="btn-primary" style="margin-top:1rem;" onclick="changePassword()">Update Password</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INVOICES TAB -->
+  <div class="tab-panel" id="tab-invoices">
+    <div class="section">
+      <div class="section-header">
+        <span class="section-title">
+          <div class="section-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+          My Invoices
+        </span>
+      </div>
+      <div class="card" id="invoicesCard"><div class="card-empty">Loading invoices…</div></div>
+    </div>
+  </div>
+
+</div>
+
+<footer>&copy; 2026 Scarlet Technical · Muncie, Indiana · <a href="/" style="color:inherit">jarviscli.dev</a></footer>
+
+<!-- MODAL -->
+<div id="modal-overlay">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="modal-title">Modal</h3>
+      <button class="modal-close" onclick="closeModal()">&#215;</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer" id="modal-footer">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" id="modal-submit" onclick="if(window._modalSubmit) window._modalSubmit()">Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast-portal"></div>
+
+<script>
+const statusLabels = { intake:'Intake', diagnosed:'Diagnosed', in_repair:'In Repair', ready_pickup:'Ready for Pickup', complete:'Complete', cancelled:'Cancelled' };
+let portalData = { me: null, repairs: [], plans: [], installments: [], tickets: [] };
+
+/* ── UTILITIES ── */
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+}
+function fmtMoney(n) { return '$' + parseFloat(n || 0).toFixed(2); }
+function esc(s) {
+  if (s == null) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function toast(msg, type='info') {
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.textContent = msg;
+  document.getElementById('toast-portal').appendChild(el);
+  setTimeout(() => { el.style.opacity='0'; el.style.transition='opacity .3s'; setTimeout(() => el.remove(), 300); }, 3500);
+}
+function openModal(title, body, onSubmit) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').innerHTML = body;
+  const submitBtn = document.getElementById('modal-submit');
+  if (onSubmit) { submitBtn.style.display=''; window._modalSubmit = onSubmit; }
+  else { submitBtn.style.display='none'; }
+  document.getElementById('modal-overlay').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  window._modalSubmit = null;
+}
+
+/* ── API ── */
+async function apiFetch(url, opts) {
+  const res = await fetch(url, opts || {});
+  if (res.status === 401) { window.location.href = '/portal/login'; return null; }
+  return res.json();
+}
+async function apiPost(url, body) {
+  const res = await fetch(url, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  if (res.status === 401) { window.location.href = '/portal/login'; return null; }
+  return res.json();
+}
+async function apiPut(url, body) {
+  const res = await fetch(url, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
+  if (res.status === 401) { window.location.href = '/portal/login'; return null; }
+  return res.json();
+}
+
+/* ── NAV / TABS ── */
+async function logout() {
+  await fetch('/portal/logout', { method:'POST' });
+  window.location.href = '/portal/login';
+}
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'tab-' + tab));
+  if (tab === 'tickets') loadTickets();
+}
+
+/* ── LOAD ── */
+async function load() {
+  const [me, repairs, plansData] = await Promise.all([
+    apiFetch('/portal/api/me'),
+    apiFetch('/portal/api/repairs'),
+    apiFetch('/portal/api/payment-plans')
+  ]);
+  if (!me) return;
+  portalData.me = me;
+  portalData.repairs = repairs || [];
+  portalData.plans = plansData?.plans || [];
+  portalData.installments = plansData?.installments || [];
+
+  document.getElementById('navUser').textContent = me.name;
+  updateAvatar(me.name, me.avatar_color);
+
+  // Prefill profile
+  document.getElementById('prof-name').value = me.name || '';
+  document.getElementById('prof-phone').value = me.phone || '';
+  document.getElementById('prof-email').value = me.email || '';
+  document.getElementById('prof-address').value = me.address || '';
+  if (me.avatar_color) {
+    document.getElementById('prof-avatar-color').value = me.avatar_color;
+    document.getElementById('prof-avatar').style.background = me.avatar_color;
+    document.getElementById('navAvatar').style.background = me.avatar_color;
+  }
+
+  // Initials avatar
+  const avatarEl = document.getElementById('profile-avatar');
+  const displayNameEl = document.getElementById('prof-display-name');
+  const displayEmailEl = document.getElementById('prof-display-email');
+  if (avatarEl && me.name) {
+    const parts = me.name.trim().split(/\s+/);
+    const initials = parts.length >= 2 ? (parts[0][0] + parts[parts.length-1][0]).toUpperCase() : me.name.slice(0,2).toUpperCase();
+    avatarEl.textContent = initials;
+  }
+  if (displayNameEl) displayNameEl.textContent = me.name || '';
+  if (displayEmailEl) displayEmailEl.textContent = me.email || me.phone || '';
+
+  // Overdue banner
+  const hasOverdue = portalData.installments.some(i => i.status === 'pending' && new Date(i.due_date) < new Date());
+  if (hasOverdue) {
+    document.getElementById('banner').innerHTML = `<div class="status-banner banner-overdue">&#9888; You have overdue payment(s). Please visit us at Scarlet Technical in Muncie or call to arrange payment.</div>`;
+    document.getElementById('banner').style.display = 'block';
+  }
+
+  renderRepairs();
+  renderPlans();
+}
+
+/* ── REPAIRS ── */
+function renderRepairs() {
+  const card = document.getElementById('repairsCard');
+  const repairs = portalData.repairs;
+  if (!repairs.length) { card.innerHTML = '<div class="card-empty">No repairs on record yet. <a href="#" onclick="switchTab(\'new-repair\');return false" style="color:var(--scarlet)">Request one now</a>.</div>'; return; }
+  card.innerHTML = repairs.map(r => {
+    const device = [r.device_brand, r.device_model || r.device_type].filter(Boolean).join(' ') || 'Device';
+    const isComplete = r.status === 'complete';
+    const hasRating = r.satisfaction_rating;
+    return `<div class="repair-item">
+      <div class="repair-info">
+        <h3>${esc(device)}${r.is_warranty_claim ? ' <span style="font-size:.7rem;background:#f0fdf4;color:#16a34a;padding:1px 6px;border-radius:8px;font-weight:600">🛡 Warranty</span>' : ''}</h3>
+        <p>${esc(r.issue_description || 'No description')} · ${fmtDate(r.created_at)}</p>
+        ${r.diagnosis_notes ? `<p style="font-style:italic;margin-top:.2rem">"${esc(r.diagnosis_notes)}"</p>` : ''}
+        ${hasRating ? `<p style="margin-top:.3rem;font-size:.75rem;">${r.satisfaction_rating === 'thumbs_up' ? '&#128077; Positive feedback' : '&#128078; Negative feedback'}${r.satisfaction_comment ? `: "${esc(r.satisfaction_comment)}"` : ''}</p>` : ''}
+        ${r.warranty_expires_at ? `<p style="margin-top:.2rem;font-size:.72rem;color:${new Date(r.warranty_expires_at)>new Date()?'#16a34a':'#dc2626'}">🛡 Warranty: ${new Date(r.warranty_expires_at)>new Date()?'Active until':'Expired'} ${fmtDate(r.warranty_expires_at)}</p>` : ''}
+      </div>
+      <div class="repair-actions">
+        <span class="badge badge-${r.status}">${esc(statusLabels[r.status] || r.status)}</span>
+        <button onclick="viewRepairDetails(${r.id})" style="font-size:.72rem;padding:.3rem .65rem;background:var(--scarlet);color:#fff;border:none;border-radius:6px;cursor:pointer;font-weight:600">Timeline &amp; Details</button>
+        ${isComplete && !hasRating ? `<button class="btn-success" onclick="openRatingModal(${r.id})" style="font-size:.72rem;padding:.3rem .65rem;">Rate</button>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ── PLANS ── */
+function renderPlans() {
+  const card = document.getElementById('plansCard');
+  const { plans, installments } = portalData;
+  if (!plans.length) { card.innerHTML = '<div class="card-empty">No payment plans on record.</div>'; return; }
+  card.innerHTML = plans.map((plan, idx) => {
+    const planInst = installments.filter(i => i.payment_plan_id === plan.id);
+    const paidCount = planInst.filter(i => i.status === 'paid').length;
+    const total = parseFloat(plan.total_amount) || 0;
+    const remaining = parseFloat(plan.remaining_balance) || 0;
+    const paid = total - remaining;
+    const pct = total > 0 ? Math.round((paid / total) * 100) : 0;
+    const hasOverdueInst = planInst.some(i => i.status === 'pending' && new Date(i.due_date) < new Date());
+    const nextInst = planInst.find(i => i.status === 'pending');
+    const device = [plan.device_brand, plan.device_model || plan.device_type].filter(Boolean).join(' ') || 'Device';
+
+    return `<div class="plan-card">
+      <div class="plan-header" onclick="togglePlan(${idx})">
+        <div style="flex:1">
+          <div class="plan-title">${esc(device)} Plan</div>
+          <div class="plan-meta">${paidCount} of ${plan.num_installments} payments
+            ${hasOverdueInst ? ' · <span style="color:var(--red)">Overdue</span>' : ''}
+            ${nextInst ? ` · Next due ${fmtDate(nextInst.due_date)}` : ''}
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:.85rem">
+          <div class="plan-amount">
+            <div class="amount-big">${fmtMoney(remaining)}</div>
+            <div class="amount-label">remaining</div>
+          </div>
+          <svg class="chevron" id="chev-${idx}" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div class="plan-body" id="planBody-${idx}">
+        <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+        <div class="progress-label"><span>${fmtMoney(paid)} paid</span><span>${fmtMoney(remaining)} remaining</span></div>
+        <div style="font-size:.78rem;color:var(--muted);margin-bottom:.75rem;">
+          ${esc(plan.frequency)} · ${fmtMoney(plan.installment_amount)}/payment · Total ${fmtMoney(total)}
+          ${plan.contract_signed ? ' · <span style="color:var(--green)">&#10003; Contract signed</span>' : ''}
+        </div>
+        ${plan.contract_signed ? `<button class="btn-secondary" style="margin-bottom:.85rem;font-size:.78rem;" onclick="viewMyContract(${plan.id})">View Contract</button>` : ''}
+        <table class="installments-table">
+          <thead><tr><th>#</th><th>Due Date</th><th>Amount</th><th>Status</th></tr></thead>
+          <tbody>
+            ${planInst.map(i => {
+              const isActuallyOverdue = i.status === 'pending' && new Date(i.due_date) < new Date();
+              const statusClass = isActuallyOverdue ? 'overdue' : i.status;
+              const statusLabel = isActuallyOverdue ? 'Overdue' : { pending:'Pending', paid:'Paid', overdue:'Overdue', waived:'Waived' }[i.status] || i.status;
+              return `<tr>
+                <td>${i.installment_number}</td>
+                <td>${fmtDate(i.due_date)}</td>
+                <td>${fmtMoney(i.amount)}</td>
+                <td><span class="badge badge-${statusClass}">${esc(statusLabel)}</span></td>
+              </tr>`;
+            }).join('')}
+          </tbody>
+        </table>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function togglePlan(idx) {
+  const body = document.getElementById('planBody-' + idx);
+  const chev = document.getElementById('chev-' + idx);
+  const isOpen = body.classList.contains('open');
+  body.classList.toggle('open', !isOpen);
+  chev.classList.toggle('open', !isOpen);
+}
+
+/* ── CONTRACT VIEW ── */
+async function viewMyContract(planId) {
+  try {
+    const res = await apiFetch(`/portal/api/payment-plans/${planId}/contract`);
+    if (!res) return;
+    const signedStr = res.plan.contract_signed_at ? `<p style="color:var(--green);font-size:.82rem;font-weight:600;margin-bottom:.75rem;">&#10003; Signed on ${fmtDate(res.plan.contract_signed_at)}</p>` : '';
+    const sigImg = res.signature_data_url ? `<div style="margin-top:1rem;"><p style="font-size:.78rem;font-weight:600;margin-bottom:.4rem;">Customer Signature:</p><img src="${esc(res.signature_data_url)}" style="max-width:240px;border:1px solid var(--border);border-radius:6px;" /></div>` : '';
+    openModal('Your Service Agreement', `
+      ${signedStr}
+      <div style="border:1px solid var(--border);border-radius:8px;max-height:400px;overflow-y:auto;padding:12px;background:#fafafa;font-size:11px;">${res.html || '<p>Contract not available.</p>'}</div>
+      ${sigImg}
+      <div style="margin-top:.85rem;text-align:right;"><button class="btn-secondary" onclick="window.print()">Print</button></div>`, null);
+  } catch(e) { toast('Could not load contract.', 'error'); }
+}
+
+/* ── REPAIR REQUEST ── */
+async function submitRepairRequest() {
+  const issue = document.getElementById('rr-issue').value.trim();
+  if (!issue) { toast('Please describe the issue.', 'error'); return; }
+  try {
+    const svcRadio = document.querySelector('input[name="rr_service_type"]:checked');
+    const res = await apiPost('/portal/api/repair-requests', {
+      device_brand: document.getElementById('rr-brand').value.trim() || undefined,
+      device_type: document.getElementById('rr-type').value || undefined,
+      issue_description: issue,
+      preferred_contact: document.getElementById('rr-contact').value,
+      service_type: svcRadio ? svcRadio.value : 'in_person',
+    });
+    if (res?.success) {
+      document.getElementById('rr-success').style.display = 'block';
+      document.getElementById('rr-issue').value = '';
+      document.getElementById('rr-brand').value = '';
+    } else {
+      toast(res?.error || 'Failed to submit.', 'error');
+    }
+  } catch(e) { toast('Failed to submit request.', 'error'); }
+}
+
+/* ── SUPPORT TICKETS ── */
+async function loadTickets() {
+  const card = document.getElementById('ticketsCard');
+  card.innerHTML = '<div class="card-empty">Loading...</div>';
+  try {
+    const tickets = await apiFetch('/portal/api/support-tickets');
+    portalData.tickets = tickets || [];
+    const openCount = (tickets||[]).filter(t => t.status === 'open').length;
+    const badge = document.getElementById('tickets-badge');
+    if (badge) { badge.textContent = openCount; badge.style.display = openCount > 0 ? 'inline-flex' : 'none'; }
+    if (!tickets || !tickets.length) { card.innerHTML = '<div class="card-empty">No support tickets yet. <a href="#" onclick="openNewTicketModal();return false;" style="color:var(--scarlet)">Submit one</a>.</div>'; return; }
+    card.innerHTML = tickets.map(t => `
+      <div class="ticket-item">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.35rem;">
+          <div class="ticket-subject">${esc(t.subject)}</div>
+          <span class="badge badge-${t.status}">${esc((t.status||'').replace(/_/g,' '))}</span>
+        </div>
+        <div class="ticket-msg">${esc(t.message)}</div>
+        <div class="ticket-meta">
+          <span>Opened ${fmtDate(t.created_at)}</span>
+          ${t.responded_at ? `<span>Replied ${fmtDate(t.responded_at)}</span>` : ''}
+        </div>
+        ${t.admin_response ? `<div class="ticket-response">
+          <strong>Scarlet Technical:</strong> ${esc(t.admin_response)}
+        </div>` : ''}
+      </div>`).join('');
+  } catch(e) { card.innerHTML = `<div class="card-empty">Error loading tickets.</div>`; }
+}
+
+function openNewTicketModal() {
+  openModal('Submit Support Request', `
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Subject</label>
+        <input class="form-control" id="ticket-subject" placeholder="Brief subject" />
+      </div>
+      <div class="form-group">
+        <label>Message</label>
+        <textarea class="form-control" id="ticket-message" placeholder="Describe your question or issue…" style="min-height:100px;"></textarea>
+      </div>
+    </div>`, async () => {
+    const subject = document.getElementById('ticket-subject').value.trim();
+    const message = document.getElementById('ticket-message').value.trim();
+    if (!subject || !message) { toast('Subject and message required.', 'error'); return; }
+    try {
+      const res = await apiPost('/portal/api/support-tickets', { subject, message });
+      if (res?.success) {
+        toast('Ticket submitted!', 'success');
+        closeModal();
+        loadTickets();
+      } else { toast(res?.error || 'Failed.', 'error'); }
+    } catch(e) { toast('Failed to submit.', 'error'); }
+  });
+}
+
+/* ── AVATAR ── */
+function getInitials(name) {
+  if (!name) return '?';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) return (parts[0][0] + parts[parts.length-1][0]).toUpperCase();
+  return parts[0].slice(0,2).toUpperCase();
+}
+function updateAvatar(name, color) {
+  const initials = getInitials(name);
+  const avatarEl = document.getElementById('prof-avatar');
+  const navAvatarEl = document.getElementById('navAvatar');
+  if (avatarEl) { avatarEl.textContent = initials; if (color) avatarEl.style.background = color; }
+  if (navAvatarEl) { navAvatarEl.textContent = initials; if (color) navAvatarEl.style.background = color; }
+}
+function setAvatarColor(color) {
+  document.getElementById('prof-avatar-color').value = color;
+  document.getElementById('prof-avatar').style.background = color;
+  document.getElementById('navAvatar').style.background = color;
+}
+
+/* ── PROFILE ── */
+async function saveProfile() {
+  const name = document.getElementById('prof-name').value.trim();
+  const phone = document.getElementById('prof-phone').value.trim();
+  const email = document.getElementById('prof-email').value.trim();
+  const address = document.getElementById('prof-address').value.trim();
+  const avatar_color = document.getElementById('prof-avatar-color').value;
+  if (!name) { toast('Name is required.', 'error'); return; }
+  try {
+    const res = await apiPut('/portal/api/profile', { name, phone: phone||null, email: email||null, address: address||null });
+    if (res?.id) {
+      portalData.me = res;
+      document.getElementById('navUser').textContent = res.name;
+      // Update avatar
+      const av = document.getElementById('profile-avatar');
+      const dn = document.getElementById('prof-display-name');
+      if (av && res.name) {
+        const pts = res.name.trim().split(/\s+/);
+        av.textContent = pts.length >= 2 ? (pts[0][0]+pts[pts.length-1][0]).toUpperCase() : res.name.slice(0,2).toUpperCase();
+      }
+      if (dn) dn.textContent = res.name || '';
+      toast('Profile updated!', 'success');
+    } else { toast(res?.error || 'Failed.', 'error'); }
+  } catch(e) { toast('Failed to save.', 'error'); }
+}
+
+/* ── CHANGE PASSWORD ── */
+async function changePassword() {
+  const current = document.getElementById('pw-current').value;
+  const newPw = document.getElementById('pw-new').value;
+  const confirm = document.getElementById('pw-confirm').value;
+  if (!current || !newPw) { toast('All fields required.', 'error'); return; }
+  if (newPw.length < 6) { toast('Password must be at least 6 characters.', 'error'); return; }
+  if (newPw !== confirm) { toast('Passwords do not match.', 'error'); return; }
+  try {
+    const res = await apiPost('/portal/api/change-password', { current_password: current, new_password: newPw });
+    if (res?.success) {
+      toast('Password changed!', 'success');
+      document.getElementById('pw-current').value = '';
+      document.getElementById('pw-new').value = '';
+      document.getElementById('pw-confirm').value = '';
+    } else { toast(res?.error || 'Failed.', 'error'); }
+  } catch(e) { toast('Failed.', 'error'); }
+}
+
+/* ── SATISFACTION RATING ── */
+let _selectedRating = null;
+function openRatingModal(repairId) {
+  _selectedRating = null;
+  openModal('How did we do?', `
+    <p style="font-size:.875rem;color:var(--muted);margin-bottom:1rem;">Your feedback helps us improve. Thanks for taking 2 seconds.</p>
+    <div style="display:flex;justify-content:center;gap:1.5rem;margin-bottom:1rem;">
+      <button class="sat-btn" id="sat-up" onclick="selectSat('thumbs_up')">&#128077; Great</button>
+      <button class="sat-btn" id="sat-down" onclick="selectSat('thumbs_down')">&#128078; Not great</button>
+    </div>
+    <div class="form-group">
+      <label>Comments (optional)</label>
+      <textarea class="form-control" id="sat-comment" placeholder="Anything else to share?" style="min-height:70px;"></textarea>
+    </div>`, async () => {
+    if (!_selectedRating) { toast('Please select a rating.', 'error'); return; }
+    try {
+      const res = await apiPost(`/portal/api/repairs/${repairId}/satisfaction`, {
+        rating: _selectedRating,
+        comment: document.getElementById('sat-comment').value.trim() || null,
+      });
+      if (res?.success) {
+        toast('Thanks for your feedback!', 'success');
+        closeModal();
+        // Refresh repairs
+        const repairs = await apiFetch('/portal/api/repairs');
+        if (repairs) { portalData.repairs = repairs; renderRepairs(); }
+      } else { toast(res?.error || 'Failed.', 'error'); }
+    } catch(e) { toast('Failed.', 'error'); }
+  });
+}
+window.selectSat = function(val) {
+  _selectedRating = val;
+  document.getElementById('sat-up').className = 'sat-btn' + (val === 'thumbs_up' ? ' selected-up' : '');
+  document.getElementById('sat-down').className = 'sat-btn' + (val === 'thumbs_down' ? ' selected-down' : '');
+};
+
+// Close modal on overlay click
+document.getElementById('modal-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+});
+
+// Load on start
+load();
+</script>
+
+<!-- MOBILE BOTTOM NAV -->
+<nav id="portal-bottom-nav">
+  <button onclick="switchTab('repairs')" data-bnav="repairs">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+    Repairs
+  </button>
+  <button onclick="switchTab('payments')" data-bnav="payments">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+    Payments
+  </button>
+  <button onclick="switchTab('new-repair')" data-bnav="new-repair">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Request
+  </button>
+  <button onclick="switchTab('tickets')" data-bnav="tickets" style="position:relative">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    <span class="bnav-badge" id="bnav-tickets-badge"></span>
+    Support
+  </button>
+  <button onclick="switchTab('profile')" data-bnav="profile">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Profile
+  </button>
+</nav>
+<script>
+// Sync bottom nav on tab switch
+(function() {
+  const origSwitch = window.switchTab;
+  window.switchTab = function(tab) {
+    if (origSwitch) origSwitch(tab);
+    document.querySelectorAll('#portal-bottom-nav button[data-bnav]').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.bnav === tab);
+    });
+  };
+  // Set initial active
+  document.querySelectorAll('#portal-bottom-nav button[data-bnav]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.bnav === 'repairs');
+  });
+})();
+</script>
+<script>
+/* ── NOTIFICATIONS ── */
+async function loadNotifications() {
+  try {
+    const r = await fetch('/portal/api/notifications');
+    if (!r.ok) return;
+    const data = await r.json();
+    const { notifications, unread } = data;
+    // Update badges
+    const badge = document.getElementById('notif-badge');
+    const tabBadge = document.getElementById('notif-tab-badge');
+    const markBtn = document.getElementById('mark-all-read-btn');
+    if (badge) { badge.textContent = unread; badge.style.display = unread > 0 ? '' : 'none'; }
+    if (tabBadge) { tabBadge.textContent = unread; tabBadge.style.display = unread > 0 ? '' : 'none'; }
+    if (markBtn) markBtn.style.display = unread > 0 ? '' : 'none';
+    // Render list
+    const list = document.getElementById('notifList');
+    if (!list) return;
+    if (!notifications || !notifications.length) {
+      list.innerHTML = '<div class="card-empty">No notifications yet. You\'re all caught up!</div>';
+      return;
+    }
+    list.innerHTML = notifications.map(n => `
+      <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:.75rem;background:${n.is_read ? '#fff' : 'var(--scarlet-light)'};cursor:pointer" onclick="markNotifRead(${n.id}, this)">
+        <div style="width:8px;height:8px;border-radius:50%;background:${n.is_read ? 'transparent' : 'var(--scarlet)'};margin-top:.35rem;flex-shrink:0"></div>
+        <div style="flex:1">
+          <div style="font-weight:${n.is_read ? '400' : '600'};font-size:.875rem;margin-bottom:.15rem">${esc(n.title)}</div>
+          ${n.message ? `<div style="font-size:.78rem;color:var(--muted)">${esc(n.message)}</div>` : ''}
+          <div style="font-size:.7rem;color:var(--muted);margin-top:.25rem">${new Date(n.created_at).toLocaleDateString(undefined, {month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}</div>
+        </div>
+      </div>
+    `).join('');
+  } catch(e) { /* non-fatal */ }
+}
+
+async function markNotifRead(id, el) {
+  if (!el.style.background.includes('scarlet')) return; // already read
+  try {
+    await fetch(`/portal/api/notifications/${id}/read`, { method: 'PUT' });
+    el.style.background = '#fff';
+    el.querySelector('div[style*="border-radius:50%"]').style.background = 'transparent';
+    el.querySelector('div[style*="font-weight"]').style.fontWeight = '400';
+    await loadNotifications(); // refresh badges
+  } catch(e) { /* non-fatal */ }
+}
+
+async function markAllNotificationsRead() {
+  try {
+    await fetch('/portal/api/notifications/read-all', { method: 'PUT' });
+    await loadNotifications();
+  } catch(e) { /* non-fatal */ }
+}
+
+/* ── IMPERSONATION BANNER ── */
+(async function checkImpersonation() {
+  try {
+    const r = await fetch('/portal/api/impersonation-status');
+    if (!r.ok) return;
+    const data = await r.json();
+    if (data.impersonating) {
+      const banner = document.createElement('div');
+      banner.style.cssText = 'position:sticky;top:0;background:#d97706;color:#fff;padding:10px 16px;font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:space-between;z-index:100;gap:12px';
+      banner.innerHTML = `
+        <span>👁 You are viewing this portal as a customer. This is an admin impersonation session.</span>
+        <button onclick="exitImpersonation()" style="background:#fff;color:#d97706;border:none;padding:4px 12px;border-radius:6px;font-weight:700;cursor:pointer;font-size:12px">Exit Impersonation</button>
+      `;
+      document.body.insertBefore(banner, document.body.firstChild);
+    }
+  } catch(e) { /* non-fatal */ }
+})();
+
+async function exitImpersonation() {
+  try {
+    const r = await fetch('/admin/api/stop-impersonate', { method: 'POST' });
+    const data = await r.json();
+    if (data.redirect) window.location.href = data.redirect;
+  } catch(e) { alert('Error ending impersonation. Please navigate manually to /admin'); }
+}
+
+/* ── Hook into switchTab to load notifications + invoices ── */
+const _origSwitchTab = window.switchTab;
+window.switchTab = function(tab) {
+  if (_origSwitchTab) _origSwitchTab(tab);
+  if (tab === 'notifications') loadNotifications();
+  if (tab === 'invoices') loadPortalInvoices();
+};
+
+// Load notification count on page load
+setTimeout(loadNotifications, 500);
+
+/* ══ INVOICES ══════════════════════════════════════════════════════════════ */
+async function loadPortalInvoices() {
+  const card = document.getElementById('invoicesCard');
+  if (!card) return;
+  try {
+    const r = await fetch('/portal/api/invoices');
+    if (!r.ok) { card.innerHTML = '<div class="card-empty">Could not load invoices.</div>'; return; }
+    const invs = await r.json();
+    if (!invs.length) { card.innerHTML = '<div class="card-empty">No invoices yet. Invoices appear here once your repair is completed.</div>'; return; }
+    card.innerHTML = invs.map(inv => {
+      const statusColor = {draft:'#9ca3af',sent:'#2563eb',paid:'#16a34a',cancelled:'#dc2626'}[inv.status]||'#6b7280';
+      return `<div style="padding:1rem 1.2rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;gap:1rem">
+        <div>
+          <div style="font-weight:600;font-size:.9rem">${esc(inv.invoice_number)}</div>
+          <div style="font-size:.78rem;color:var(--muted);margin-top:.15rem">${fmtDate(inv.created_at)}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:.4rem">
+          <span style="font-weight:700;color:#C41E3A;font-size:1rem">$${parseFloat(inv.total||0).toFixed(2)}</span>
+          <span style="font-size:.72rem;font-weight:600;color:${statusColor};background:${statusColor}18;padding:1px 8px;border-radius:10px;text-transform:capitalize">${inv.status}</span>
+          <button onclick="viewPortalInvoice(${inv.id})" style="font-size:.72rem;padding:.25rem .6rem;background:var(--scarlet);color:#fff;border:none;border-radius:5px;cursor:pointer;font-weight:600">View / Print</button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) { card.innerHTML = '<div class="card-empty">Error loading invoices.</div>'; }
+}
+
+function viewPortalInvoice(id) {
+  window.open(`/portal/api/invoices/${id}/html`, '_blank');
+}
+
+/* ══ REPAIR DETAILS (TIMELINE + PHOTOS + CHECKLIST) ═══════════════════════ */
+async function viewRepairDetails(repairId) {
+  const [timelineR, photosR, checklistR] = await Promise.all([
+    fetch(`/portal/api/repairs/${repairId}/timeline`).then(r=>r.json()).catch(()=>[]),
+    fetch(`/portal/api/repairs/${repairId}/photos`).then(r=>r.json()).catch(()=>[]),
+    fetch(`/portal/api/repairs/${repairId}/checklist`).then(r=>r.json()).catch(()=>null)
+  ]);
+
+  const repair = portalData.repairs.find(r => r.id === repairId) || {};
+  const device = [repair.device_brand, repair.device_model || repair.device_type].filter(Boolean).join(' ') || 'Device';
+
+  // Timeline
+  const statuses = ['intake','diagnosed','in_repair','ready_pickup','complete'];
+  const statusLabelsTimeline = {intake:'Received',diagnosed:'Diagnosing',in_repair:'In Repair',ready_pickup:'Ready for Pickup',complete:'Completed'};
+  const tlRows = Array.isArray(timelineR) ? timelineR : [];
+  const currentIdx = statuses.indexOf(repair.status||'intake');
+
+  const timelineHTML = `
+    <div style="padding:16px 0 8px">
+      <div style="font-weight:600;font-size:.9rem;margin-bottom:12px;color:#374151">Repair Progress</div>
+      <div style="display:flex;gap:0;overflow-x:auto;padding-bottom:8px;">
+        ${statuses.map((s,i) => {
+          const done = i < currentIdx || (i === currentIdx);
+          const current = s === repair.status;
+          const hist = tlRows.find(t=>t.status===s);
+          const colDone = '#16a34a', colCurrent = '#C41E3A', colPending = '#e5e7eb';
+          const bg = current ? colCurrent : done ? colDone : colPending;
+          const textColor = current ? '#C41E3A' : done ? '#16a34a' : '#9ca3af';
+          return `<div style="flex:1;min-width:80px;text-align:center;position:relative;">
+            ${i>0?`<div style="position:absolute;top:12px;left:-50%;width:100%;height:2px;background:${done?colDone:colPending};z-index:0;"></div>`:''}
+            <div style="width:24px;height:24px;border-radius:50%;background:${bg};color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;position:relative;z-index:1;">${done||current?'✓':i+1}</div>
+            <div style="font-size:10px;font-weight:600;margin-top:4px;color:${textColor}">${statusLabelsTimeline[s]||s}</div>
+            ${hist?`<div style="font-size:9px;color:#9ca3af;margin-top:2px">${new Date(hist.changed_at).toLocaleDateString()}</div>`:''}
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+
+  // Photos
+  const photosList = Array.isArray(photosR) ? photosR : [];
+  const photosHTML = photosList.length ? `
+    <div style="margin-top:12px">
+      <div style="font-weight:600;font-size:.9rem;margin-bottom:8px;color:#374151">Photos (${photosList.length})</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:6px">
+        ${photosList.map(p=>`<div style="border:1px solid #e5e7eb;border-radius:6px;overflow:hidden;cursor:pointer" onclick="viewPortalPhoto(${p.id})">
+          <div style="background:#f3f4f6;height:60px;display:flex;align-items:center;justify-content:center;font-size:18px">🖼</div>
+          <div style="padding:3px 5px;font-size:9px;color:#9ca3af;text-transform:capitalize">${p.stage}</div>
+        </div>`).join('')}
+      </div>
+    </div>` : '';
+
+  // Checklist
+  const ck = checklistR;
+  let checklistHTML = '';
+  if (ck) {
+    const fields = [
+      ['screen_cond','screen_notes','Screen'],['buttons_cond','buttons_notes','Buttons/Keys'],
+      ['battery_cond','battery_notes','Battery'],['water_cond','water_notes','Water Damage'],
+      ['ports_cond','ports_notes','Ports'],['cosmetic_cond','cosmetic_notes','Cosmetic'],
+      ['power_test','power_notes','Power Test'],['audio_test','audio_notes','Audio Test']
+    ];
+    const condColor = {pass:'#16a34a',fail:'#dc2626',na:'#9ca3af'};
+    checklistHTML = `
+      <div style="margin-top:16px">
+        <div style="font-weight:600;font-size:.9rem;margin-bottom:8px;color:#374151">Intake Condition Report</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+          ${fields.map(([cond,notes,label])=>`<div style="display:flex;justify-content:space-between;padding:4px 8px;background:#f9fafb;border-radius:4px;font-size:.78rem">
+            <span style="color:#374151">${label}</span>
+            <span style="font-weight:600;color:${condColor[ck[cond]]||'#9ca3af'};text-transform:uppercase">${ck[cond]||'n/a'}</span>
+          </div>`).join('')}
+        </div>
+        ${ck.customer_name ? `<div style="margin-top:8px;font-size:.78rem;color:#6b7280">Signed by: <strong>${esc(ck.customer_name)}</strong> on ${new Date(ck.completed_at).toLocaleDateString()}</div>` : ''}
+      </div>`;
+  }
+
+  // Warranty info
+  const warrantyHTML = repair.warranty_expires_at ? `
+    <div style="margin-top:12px;padding:10px 14px;background:${new Date(repair.warranty_expires_at)>new Date()?'#f0fdf4':'#fef2f2'};border-radius:8px;font-size:.82rem">
+      <strong style="color:${new Date(repair.warranty_expires_at)>new Date()?'#16a34a':'#dc2626'}">
+        ${new Date(repair.warranty_expires_at)>new Date()?'🛡 Warranty Active':'⚠ Warranty Expired'}
+      </strong>
+      <span style="margin-left:8px;color:#6b7280">Until ${new Date(repair.warranty_expires_at).toLocaleDateString()}</span>
+      <div style="margin-top:4px;color:#6b7280;font-size:.75rem">If the same issue recurs within the warranty period, contact us — it's covered at no charge.</div>
+    </div>` : '';
+
+  openModal(`${esc(device)} — Repair #${repairId}`, `
+    ${timelineHTML}
+    ${warrantyHTML}
+    ${photosHTML}
+    ${checklistHTML}
+  `, null);
+  // Hide submit button
+  const footer = document.getElementById('modal-footer');
+  if (footer) {
+    footer.innerHTML = '<button class="btn-secondary" onclick="closeModal()" style="padding:.5rem 1.2rem;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;font-weight:500">Close</button>';
+  }
+}
+
+async function viewPortalPhoto(photoId) {
+  try {
+    const r = await fetch(`/portal/api/photos/${photoId}`);
+    const p = await r.json();
+    if (p && p.photo_data) {
+      openModal('Photo', `<div style="text-align:center"><img src="${p.photo_data}" style="max-width:100%;max-height:60vh;border-radius:8px">${p.caption?`<div style="margin-top:8px;color:#6b7280;font-size:.82rem">${esc(p.caption)}</div>`:''}</div>`, null);
+      const footer = document.getElementById('modal-footer');
+      if (footer) footer.innerHTML = '<button onclick="closeModal()" style="padding:.5rem 1.2rem;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:6px;cursor:pointer;font-weight:500">Close</button>';
+    }
+  } catch(e) {}
+}
+</script>
+</body>
+</html>

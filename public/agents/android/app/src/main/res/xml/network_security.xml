@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Only allow HTTPS connections to production server -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">scarlet-technical.polsia.app</domain>
+        <domain includeSubdomains="true">polsia.app</domain>
+    </domain-config>
+    <!-- For local development/testing only — remove for production -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">localhost</domain>
+        <domain includeSubdomains="true">10.0.2.2</domain>
+    </domain-config>
+</network-security-config>

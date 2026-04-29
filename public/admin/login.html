@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login — Scarlet Technical</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--scarlet:#C41E3A;--scarlet-dark:#9E1830;--ink:#111;--muted:#6B7280;--border:#E5E7EB;--paper:#FAFAFA}
+body{font-family:'Inter',sans-serif;background:var(--paper);display:flex;align-items:center;justify-content:center;min-height:100vh;color:var(--ink)}
+.card{background:#fff;border:1px solid var(--border);border-radius:16px;padding:2.5rem;width:100%;max-width:400px;box-shadow:0 4px 24px rgba(0,0,0,.06)}
+.logo{display:flex;align-items:center;gap:.6rem;margin-bottom:2rem}
+.logo-icon{width:40px;height:40px;background:var(--scarlet);border-radius:10px;display:flex;align-items:center;justify-content:center}
+.logo-text{font-weight:700;font-size:1.1rem}
+.logo-text span{color:var(--scarlet)}
+h1{font-size:1.4rem;font-weight:700;margin-bottom:.4rem}
+.subtitle{color:var(--muted);font-size:.9rem;margin-bottom:1.75rem}
+label{display:block;font-size:.85rem;font-weight:600;margin-bottom:.4rem;color:var(--ink)}
+input{display:block;width:100%;padding:.7rem .9rem;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:.95rem;outline:none;transition:border-color .15s}
+input:focus{border-color:var(--scarlet)}
+.field{margin-bottom:1.25rem}
+.btn{width:100%;padding:.85rem;background:var(--scarlet);color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:1rem;font-weight:600;cursor:pointer;transition:background .2s;margin-top:.5rem}
+.btn:hover{background:var(--scarlet-dark)}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.error{background:#FDF2F4;color:var(--scarlet);border:1px solid #FECDD3;padding:.7rem .9rem;border-radius:8px;font-size:.85rem;margin-bottom:1rem;display:none}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">
+    <div class="logo-icon">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+    </div>
+    <div class="logo-text">Scarlet <span>Technical</span></div>
+  </div>
+  <h1>Admin Login</h1>
+  <p class="subtitle">Sign in to manage customers and payments.</p>
+  <div id="error" class="error"></div>
+  <form id="loginForm">
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="email" required placeholder="admin@example.com" autocomplete="username">
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="password" required placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button type="submit" class="btn" id="btn">Sign In</button>
+  </form>
+</div>
+<script>
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('btn');
+  const err = document.getElementById('error');
+  btn.disabled = true; btn.textContent = 'Signing in...';
+  err.style.display = 'none';
+  try {
+    const res = await fetch('/admin/login', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ email: document.getElementById('email').value, password: document.getElementById('password').value })
+    });
+    const data = await res.json();
+    if (data.success) { window.location.href = '/admin'; }
+    else { err.textContent = data.error || 'Login failed'; err.style.display = 'block'; }
+  } catch (e) { err.textContent = 'Network error'; err.style.display = 'block'; }
+  btn.disabled = false; btn.textContent = 'Sign In';
+});
+</script>
+</body>
+</html>

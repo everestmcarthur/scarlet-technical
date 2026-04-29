@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FAFAFA">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="28dp">
+
+        <!-- Logo / Header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="8dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="S"
+                android:textSize="28sp"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:background="#C41E3A"
+                android:paddingLeft="14dp"
+                android:paddingRight="14dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Scarlet Technical"
+            android:textSize="26sp"
+            android:textColor="#C41E3A"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Device Management Agent"
+            android:textSize="15sp"
+            android:textColor="#888888"
+            android:gravity="center"
+            android:layout_marginBottom="36dp"/>
+
+        <!-- Enrollment Card -->
+        <LinearLayout
+            android:id="@+id/enrollment_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#FFFFFF"
+            android:padding="20dp"
+            android:layout_marginBottom="16dp"
+            android:elevation="2dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Device Setup"
+                android:textSize="18sp"
+                android:textColor="#1A1A2E"
+                android:textStyle="bold"
+                android:layout_marginBottom="4dp"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Enter the enrollment token provided by your technician."
+                android:textSize="13sp"
+                android:textColor="#666666"
+                android:layout_marginBottom="20dp"/>
+
+            <!-- Server URL (read-only, shown for transparency) -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Server"
+                android:textSize="12sp"
+                android:textColor="#333333"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp"/>
+
+            <EditText
+                android:id="@+id/server_url_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="https://scarlet-technical.polsia.app"
+                android:inputType="textUri"
+                android:padding="12dp"
+                android:background="#F5F5F5"
+                android:textColor="#555555"
+                android:textSize="13sp"
+                android:layout_marginBottom="16dp"/>
+
+            <!-- Token input -->
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Enrollment Token"
+                android:textSize="12sp"
+                android:textColor="#333333"
+                android:textStyle="bold"
+                android:layout_marginBottom="6dp"/>
+
+            <EditText
+                android:id="@+id/enrollment_token_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Paste token here"
+                android:inputType="text"
+                android:padding="12dp"
+                android:background="#F5F5F5"
+                android:textColor="#1A1A2E"
+                android:textSize="14sp"
+                android:layout_marginBottom="24dp"/>
+
+            <!-- Enroll Button -->
+            <Button
+                android:id="@+id/enroll_button"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Enroll This Device"
+                android:textSize="16sp"
+                android:textColor="#FFFFFF"
+                android:background="#C41E3A"
+                android:textStyle="bold"/>
+
+        </LinearLayout>
+
+        <!-- Status card -->
+        <LinearLayout
+            android:id="@+id/status_card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="#FFFFFF"
+            android:padding="20dp"
+            android:elevation="2dp">
+
+            <TextView
+                android:id="@+id/status_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Enter your enrollment token to get started."
+                android:textSize="13sp"
+                android:textColor="#555555"
+                android:lineSpacingMultiplier="1.4"/>
+        </LinearLayout>
+
+        <!-- Footer -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Scarlet Technical · (765) 555-0100"
+            android:textSize="11sp"
+            android:textColor="#BBBBBB"
+            android:gravity="center"
+            android:layout_marginTop="24dp"/>
+
+    </LinearLayout>
+
+</ScrollView>
