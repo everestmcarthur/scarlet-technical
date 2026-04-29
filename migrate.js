@@ -29,7 +29,7 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 const pool = new Pool({
   connectionString: dbUrl,
-  ssl: isProduction || dbUrl.includes('supabase')
+  ssl: isProduction || dbUrl.includes('supabase') || dbUrl.includes('pooler')
     ? { rejectUnauthorized: false }
     : false,
 });
