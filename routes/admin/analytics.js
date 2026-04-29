@@ -1,9 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { pool } = require('../../lib/db');
-const { requireAuth } = require('../../middleware/auth');
 
-router.use(requireAuth);
+function requireAdmin(req, res, next) {
+  if (!req.session?.adminId) return res.status(401).json({ error: 'Unauthorized' });
+  next();
+}
+
+router.use(requireAdmin);
 
 // ── Executive Dashboard Stats ─────────────────────────────────────────────
 router.get('/api/admin/analytics/executive', async (req, res) => {
@@ -149,7 +153,7 @@ router.get('/api/admin/analytics/customers', async (req, res) => {
 router.get('/api/admin/analytics/inventory', async (req, res) => {
   try {
     const [lowStock, topSelling, valuation] = await Promise.all([
-      pool.query(`SELECT * FROM inventory WHERE quantity <= reorder_level ORDER BY quantity ASC LIMIT 10`),
+      pool.query(`SELECT * FROM inventory WHERE quantity <= COALESCE(reorder_point, 3) ORDER BY quantity ASC LIMIT 10`),
       pool.query(
         `SELECT i.name, i.sku, SUM(rp.quantity) as units_used
          FROM repair_parts rp JOIN inventory i ON rp.inventory_id = i.id
@@ -157,7 +161,7 @@ router.get('/api/admin/analytics/inventory', async (req, res) => {
          GROUP BY i.id, i.name, i.sku ORDER BY units_used DESC LIMIT 10`
       ),
       pool.query(`SELECT COUNT(*) as total_items, SUM(quantity) as total_units,
-                  SUM(quantity * COALESCE(cost, 0)) as total_value FROM inventory`)
+                  SUM(quantity * COALESCE(unit_cost, 0)) as total_value FROM inventory`)
     ]);
     
     res.json({

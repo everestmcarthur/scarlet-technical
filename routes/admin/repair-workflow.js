@@ -1,9 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { pool } = require('../../lib/db');
-const { requireAuth } = require('../../middleware/auth');
 
-router.use(requireAuth);
+function requireAdmin(req, res, next) {
+  if (!req.session?.adminId) return res.status(401).json({ error: 'Unauthorized' });
+  next();
+}
+
+router.use(requireAdmin);
 
 // ── Kanban Board ──────────────────────────────────────────────────────────
 router.get('/api/admin/repair-kanban', async (req, res) => {
@@ -70,7 +74,7 @@ router.post('/api/admin/repairs/:id/parts', async (req, res) => {
     if (!inv.rows[0]) return res.status(404).json({ error: 'Part not found' });
     if (inv.rows[0].quantity < quantity) return res.status(400).json({ error: 'Insufficient stock' });
     
-    const cost = inv.rows[0].sell_price || inv.rows[0].cost || 0;
+    const cost = inv.rows[0].sell_price || inv.rows[0].unit_cost || 0;
     await pool.query('UPDATE inventory SET quantity = quantity - $1 WHERE id = $2', [quantity, inventory_id]);
     
     const { rows } = await pool.query(
@@ -96,7 +100,7 @@ router.post('/api/admin/repair-templates', async (req, res) => {
     const { rows } = await pool.query(
       `INSERT INTO repair_templates (name, device_type, checklist, estimated_minutes, default_priority, notes, created_by)
        VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
-      [name, device_type, JSON.stringify(checklist || []), estimated_minutes, default_priority || 'normal', notes, req.session.user.id]
+      [name, device_type, JSON.stringify(checklist || []), estimated_minutes, default_priority || 'normal', notes, req.session.adminId]
     );
     res.json(rows[0]);
   } catch (e) { res.status(500).json({ error: e.message }); }
@@ -123,7 +127,7 @@ router.post('/api/admin/repairs/:id/diagnostic', async (req, res) => {
        ram_gb, screen_condition, wifi_test, bluetooth_test, speaker_test, camera_test, charging_test, notes, created_by)
        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) RETURNING *`,
       [req.params.id, device_id||null, battery_health, storage_used_gb, storage_total_gb, ram_gb,
-       screen_condition, wifi_test, bluetooth_test, speaker_test, camera_test, charging_test, notes, req.session.user.id]
+       screen_condition, wifi_test, bluetooth_test, speaker_test, camera_test, charging_test, notes, req.session.adminId]
     );
     res.json(rows[0]);
   } catch (e) { res.status(500).json({ error: e.message }); }

@@ -6,23 +6,28 @@
 -- REPAIR WORKFLOW ENHANCEMENTS
 -- ════════════════════════════════════════════════════════════════════════════
 
--- Repair kanban board positions
 ALTER TABLE repair_requests ADD COLUMN IF NOT EXISTS kanban_position INTEGER DEFAULT 0;
-ALTER TABLE repair_requests ADD COLUMN IF NOT EXISTS priority VARCHAR(10) DEFAULT 'normal' CHECK (priority IN ('low','normal','high','urgent'));
-ALTER TABLE repair_requests ADD COLUMN IF NOT EXISTS assigned_tech INTEGER REFERENCES admin_users(id) ON DELETE SET NULL;
+ALTER TABLE repair_requests ADD COLUMN IF NOT EXISTS priority VARCHAR(20) DEFAULT 'normal';
+ALTER TABLE repair_requests ADD COLUMN IF NOT EXISTS assigned_tech INTEGER;
 ALTER TABLE repair_requests ADD COLUMN IF NOT EXISTS estimated_minutes INTEGER;
 ALTER TABLE repair_requests ADD COLUMN IF NOT EXISTS actual_minutes INTEGER;
 ALTER TABLE repair_requests ADD COLUMN IF NOT EXISTS bench_fee DECIMAL(10,2) DEFAULT 0;
 ALTER TABLE repair_requests ADD COLUMN IF NOT EXISTS storage_fee DECIMAL(10,2) DEFAULT 0;
-ALTER TABLE repair_requests ADD COLUMN IF NOT EXISTS template_id INTEGER REFERENCES repair_templates(id) ON DELETE SET NULL;
-ALTER TABLE repair_requests ADD COLUMN IF NOT EXISTS parent_repair_id INTEGER REFERENCES repair_requests(id) ON DELETE SET NULL;
+ALTER TABLE repair_requests ADD COLUMN IF NOT EXISTS template_id INTEGER;
+ALTER TABLE repair_requests ADD COLUMN IF NOT EXISTS parent_repair_id INTEGER;
 ALTER TABLE repair_requests ADD COLUMN IF NOT EXISTS warranty_claim BOOLEAN DEFAULT false;
+ALTER TABLE repair_requests ADD COLUMN IF NOT EXISTS customer_id INTEGER;
+ALTER TABLE repair_requests ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+
+-- Update status constraint to support workflow statuses
+ALTER TABLE repair_requests DROP CONSTRAINT IF EXISTS repair_requests_status_check;
+ALTER TABLE repair_requests ALTER COLUMN status SET DEFAULT 'received';
 
 -- Parts consumption per repair
 CREATE TABLE IF NOT EXISTS repair_parts (
   id SERIAL PRIMARY KEY,
-  repair_id INTEGER NOT NULL REFERENCES repair_requests(id) ON DELETE CASCADE,
-  inventory_id INTEGER NOT NULL REFERENCES inventory(id) ON DELETE RESTRICT,
+  repair_id INTEGER NOT NULL,
+  inventory_id INTEGER NOT NULL,
   quantity INTEGER NOT NULL DEFAULT 1,
   unit_cost DECIMAL(10,2),
   created_at TIMESTAMPTZ DEFAULT NOW()
@@ -32,7 +37,7 @@ CREATE TABLE IF NOT EXISTS repair_parts (
 CREATE TABLE IF NOT EXISTS aging_alert_rules (
   id SERIAL PRIMARY KEY,
   days_threshold INTEGER NOT NULL,
-  alert_type VARCHAR(20) DEFAULT 'notification' CHECK (alert_type IN ('notification','email','sms')),
+  alert_type VARCHAR(20) DEFAULT 'notification',
   message_template TEXT,
   active BOOLEAN DEFAULT true,
   created_at TIMESTAMPTZ DEFAULT NOW()
@@ -41,8 +46,8 @@ CREATE TABLE IF NOT EXISTS aging_alert_rules (
 -- Diagnostic reports
 CREATE TABLE IF NOT EXISTS diagnostic_reports (
   id SERIAL PRIMARY KEY,
-  repair_id INTEGER NOT NULL REFERENCES repair_requests(id) ON DELETE CASCADE,
-  device_id INTEGER REFERENCES devices(id) ON DELETE SET NULL,
+  repair_id INTEGER NOT NULL,
+  device_id INTEGER,
   battery_health VARCHAR(20),
   storage_used_gb DECIMAL(6,2),
   storage_total_gb DECIMAL(6,2),
@@ -54,7 +59,7 @@ CREATE TABLE IF NOT EXISTS diagnostic_reports (
   camera_test VARCHAR(20),
   charging_test VARCHAR(20),
   notes TEXT,
-  created_by INTEGER REFERENCES admin_users(id),
+  created_by INTEGER,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -62,44 +67,41 @@ CREATE TABLE IF NOT EXISTS diagnostic_reports (
 -- BILLING ENHANCEMENTS
 -- ════════════════════════════════════════════════════════════════════════════
 
--- Partial payments
 CREATE TABLE IF NOT EXISTS partial_payments (
   id SERIAL PRIMARY KEY,
-  invoice_id INTEGER REFERENCES invoices(id) ON DELETE CASCADE,
-  plan_id INTEGER REFERENCES payment_plans(id) ON DELETE CASCADE,
+  invoice_id INTEGER,
+  plan_id INTEGER,
   amount DECIMAL(10,2) NOT NULL,
   method VARCHAR(30) DEFAULT 'cash',
   reference VARCHAR(100),
   stripe_payment_id VARCHAR(100),
   notes TEXT,
-  created_by INTEGER REFERENCES admin_users(id),
+  created_by INTEGER,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Refunds
 CREATE TABLE IF NOT EXISTS refunds (
   id SERIAL PRIMARY KEY,
-  invoice_id INTEGER REFERENCES invoices(id) ON DELETE SET NULL,
-  plan_id INTEGER REFERENCES payment_plans(id) ON DELETE SET NULL,
-  customer_id INTEGER NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
+  invoice_id INTEGER,
+  plan_id INTEGER,
+  customer_id INTEGER NOT NULL,
   amount DECIMAL(10,2) NOT NULL,
   reason TEXT,
   method VARCHAR(30) DEFAULT 'original',
   stripe_refund_id VARCHAR(100),
-  status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending','approved','processed','denied')),
-  approved_by INTEGER REFERENCES admin_users(id),
-  created_by INTEGER REFERENCES admin_users(id),
+  status VARCHAR(20) DEFAULT 'pending',
+  approved_by INTEGER,
+  created_by INTEGER,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   processed_at TIMESTAMPTZ
 );
 
--- Recurring invoices
 CREATE TABLE IF NOT EXISTS recurring_invoices (
   id SERIAL PRIMARY KEY,
-  customer_id INTEGER NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
+  customer_id INTEGER NOT NULL,
   description TEXT,
   amount DECIMAL(10,2) NOT NULL,
-  frequency VARCHAR(20) DEFAULT 'monthly' CHECK (frequency IN ('weekly','biweekly','monthly','quarterly','yearly')),
+  frequency VARCHAR(20) DEFAULT 'monthly',
   next_due DATE,
   active BOOLEAN DEFAULT true,
   auto_charge BOOLEAN DEFAULT false,
@@ -111,25 +113,21 @@ CREATE TABLE IF NOT EXISTS recurring_invoices (
 -- CUSTOMER ENHANCEMENTS
 -- ════════════════════════════════════════════════════════════════════════════
 
--- NPS Surveys
 CREATE TABLE IF NOT EXISTS nps_surveys (
   id SERIAL PRIMARY KEY,
-  customer_id INTEGER NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
-  repair_id INTEGER REFERENCES repair_requests(id) ON DELETE SET NULL,
-  score INTEGER CHECK (score BETWEEN 0 AND 10),
+  customer_id INTEGER NOT NULL,
+  repair_id INTEGER,
+  score INTEGER,
   feedback TEXT,
   sent_at TIMESTAMPTZ DEFAULT NOW(),
   responded_at TIMESTAMPTZ
 );
 
--- Business accounts (for B2B customers)
 ALTER TABLE customers ADD COLUMN IF NOT EXISTS is_business BOOLEAN DEFAULT false;
 ALTER TABLE customers ADD COLUMN IF NOT EXISTS company_name VARCHAR(200);
 ALTER TABLE customers ADD COLUMN IF NOT EXISTS tax_id VARCHAR(50);
 ALTER TABLE customers ADD COLUMN IF NOT EXISTS billing_address TEXT;
 ALTER TABLE customers ADD COLUMN IF NOT EXISTS net_terms INTEGER DEFAULT 0;
-
--- Communication preferences
 ALTER TABLE customers ADD COLUMN IF NOT EXISTS pref_sms BOOLEAN DEFAULT true;
 ALTER TABLE customers ADD COLUMN IF NOT EXISTS pref_email BOOLEAN DEFAULT true;
 ALTER TABLE customers ADD COLUMN IF NOT EXISTS pref_marketing BOOLEAN DEFAULT false;
@@ -139,7 +137,6 @@ ALTER TABLE customers ADD COLUMN IF NOT EXISTS language VARCHAR(10) DEFAULT 'en'
 -- SUPPORT ENHANCEMENTS
 -- ════════════════════════════════════════════════════════════════════════════
 
--- SLA definitions
 CREATE TABLE IF NOT EXISTS sla_policies (
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
@@ -150,22 +147,20 @@ CREATE TABLE IF NOT EXISTS sla_policies (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Ticket SLA tracking
-ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS sla_policy_id INTEGER REFERENCES sla_policies(id) ON DELETE SET NULL;
+ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS sla_policy_id INTEGER;
 ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS sla_response_due TIMESTAMPTZ;
 ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS sla_resolution_due TIMESTAMPTZ;
 ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS sla_responded_at TIMESTAMPTZ;
 ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS sla_resolved_at TIMESTAMPTZ;
 ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS escalated BOOLEAN DEFAULT false;
-ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS escalated_to INTEGER REFERENCES admin_users(id) ON DELETE SET NULL;
+ALTER TABLE support_tickets ADD COLUMN IF NOT EXISTS escalated_to INTEGER;
 
--- Escalation rules
 CREATE TABLE IF NOT EXISTS escalation_rules (
   id SERIAL PRIMARY KEY,
   name VARCHAR(100) NOT NULL,
-  trigger_type VARCHAR(30) DEFAULT 'sla_breach' CHECK (trigger_type IN ('sla_breach','time_elapsed','priority','keyword')),
+  trigger_type VARCHAR(30) DEFAULT 'sla_breach',
   trigger_value VARCHAR(100),
-  escalate_to INTEGER REFERENCES admin_users(id),
+  escalate_to INTEGER,
   notify_via VARCHAR(20) DEFAULT 'notification',
   active BOOLEAN DEFAULT true,
   created_at TIMESTAMPTZ DEFAULT NOW()
@@ -175,17 +170,15 @@ CREATE TABLE IF NOT EXISTS escalation_rules (
 -- SCHEDULING ENHANCEMENTS
 -- ════════════════════════════════════════════════════════════════════════════
 
--- Recurring appointments
 ALTER TABLE appointments ADD COLUMN IF NOT EXISTS recurring BOOLEAN DEFAULT false;
 ALTER TABLE appointments ADD COLUMN IF NOT EXISTS recurrence_pattern VARCHAR(30);
 ALTER TABLE appointments ADD COLUMN IF NOT EXISTS recurrence_end DATE;
-ALTER TABLE appointments ADD COLUMN IF NOT EXISTS parent_appointment_id INTEGER REFERENCES appointments(id) ON DELETE SET NULL;
+ALTER TABLE appointments ADD COLUMN IF NOT EXISTS parent_appointment_id INTEGER;
 
--- Technician availability
 CREATE TABLE IF NOT EXISTS tech_availability (
   id SERIAL PRIMARY KEY,
-  admin_user_id INTEGER NOT NULL REFERENCES admin_users(id) ON DELETE CASCADE,
-  day_of_week INTEGER CHECK (day_of_week BETWEEN 0 AND 6),
+  admin_user_id INTEGER NOT NULL,
+  day_of_week INTEGER,
   start_time TIME NOT NULL,
   end_time TIME NOT NULL,
   available BOOLEAN DEFAULT true
@@ -201,16 +194,15 @@ ALTER TABLE inventory ADD COLUMN IF NOT EXISTS last_cost DECIMAL(10,2);
 ALTER TABLE inventory ADD COLUMN IF NOT EXISTS avg_cost DECIMAL(10,2);
 ALTER TABLE inventory ADD COLUMN IF NOT EXISTS warranty_months INTEGER DEFAULT 0;
 
--- Inventory movements/audit trail
 CREATE TABLE IF NOT EXISTS inventory_movements (
   id SERIAL PRIMARY KEY,
-  inventory_id INTEGER NOT NULL REFERENCES inventory(id) ON DELETE CASCADE,
-  movement_type VARCHAR(20) CHECK (movement_type IN ('purchase','sale','repair_use','adjustment','transfer','return')),
+  inventory_id INTEGER NOT NULL,
+  movement_type VARCHAR(20),
   quantity INTEGER NOT NULL,
   reference_id INTEGER,
   reference_type VARCHAR(30),
   notes TEXT,
-  created_by INTEGER REFERENCES admin_users(id),
+  created_by INTEGER,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -225,7 +217,6 @@ ALTER TABLE admin_users ADD COLUMN IF NOT EXISTS totp_enabled BOOLEAN DEFAULT fa
 ALTER TABLE admin_users ADD COLUMN IF NOT EXISTS allowed_ips TEXT;
 ALTER TABLE admin_users ADD COLUMN IF NOT EXISTS last_password_change TIMESTAMPTZ;
 
--- IP allowlist global
 CREATE TABLE IF NOT EXISTS ip_allowlist (
   id SERIAL PRIMARY KEY,
   ip_address VARCHAR(45) NOT NULL,
@@ -238,48 +229,47 @@ CREATE TABLE IF NOT EXISTS ip_allowlist (
 -- UI/UX ENHANCEMENTS
 -- ════════════════════════════════════════════════════════════════════════════
 
--- Dashboard widgets configuration
 CREATE TABLE IF NOT EXISTS dashboard_widgets (
   id SERIAL PRIMARY KEY,
-  admin_user_id INTEGER NOT NULL REFERENCES admin_users(id) ON DELETE CASCADE,
+  admin_user_id INTEGER NOT NULL,
   widget_type VARCHAR(50) NOT NULL,
   position INTEGER DEFAULT 0,
   config JSONB DEFAULT '{}',
   visible BOOLEAN DEFAULT true
 );
 
--- Keyboard shortcuts config
 CREATE TABLE IF NOT EXISTS user_preferences (
   id SERIAL PRIMARY KEY,
-  admin_user_id INTEGER NOT NULL REFERENCES admin_users(id) ON DELETE CASCADE,
+  admin_user_id INTEGER NOT NULL,
   key VARCHAR(50) NOT NULL,
-  value TEXT,
-  UNIQUE(admin_user_id, key)
+  value TEXT
 );
 
 -- ════════════════════════════════════════════════════════════════════════════
 -- SEED DATA
 -- ════════════════════════════════════════════════════════════════════════════
 
--- Default SLA policies
 INSERT INTO sla_policies (name, response_hours, resolution_hours, priority)
-VALUES
-  ('Standard', 24, 72, 'normal'),
-  ('Priority', 8, 24, 'high'),
-  ('Emergency', 1, 4, 'urgent')
-ON CONFLICT DO NOTHING;
+SELECT 'Standard', 24, 72, 'normal'
+WHERE NOT EXISTS (SELECT 1 FROM sla_policies WHERE name = 'Standard');
 
--- Default aging alert rules
+INSERT INTO sla_policies (name, response_hours, resolution_hours, priority)
+SELECT 'Priority', 8, 24, 'high'
+WHERE NOT EXISTS (SELECT 1 FROM sla_policies WHERE name = 'Priority');
+
+INSERT INTO sla_policies (name, response_hours, resolution_hours, priority)
+SELECT 'Emergency', 1, 4, 'urgent'
+WHERE NOT EXISTS (SELECT 1 FROM sla_policies WHERE name = 'Emergency');
+
 INSERT INTO aging_alert_rules (days_threshold, alert_type, message_template)
-VALUES
-  (3, 'notification', 'Repair #{repair_id} has been in {status} for {days} days'),
-  (7, 'email', 'ATTENTION: Repair #{repair_id} is aging - {days} days in {status}'),
-  (14, 'sms', 'Urgent: Repair #{repair_id} needs attention - {days} days without update')
-ON CONFLICT DO NOTHING;
+SELECT 3, 'notification', 'Repair #{repair_id} has been in {status} for {days} days'
+WHERE NOT EXISTS (SELECT 1 FROM aging_alert_rules WHERE days_threshold = 3);
 
--- Default tech availability (Mon-Fri 9-5)
--- (Will be populated per user when they set up)
+INSERT INTO aging_alert_rules (days_threshold, alert_type, message_template)
+SELECT 7, 'email', 'ATTENTION: Repair #{repair_id} is aging - {days} days in {status}'
+WHERE NOT EXISTS (SELECT 1 FROM aging_alert_rules WHERE days_threshold = 7);
 
--- Update default admin credentials 
--- (password update handled by JS migration 023)
+INSERT INTO aging_alert_rules (days_threshold, alert_type, message_template)
+SELECT 14, 'sms', 'Urgent: Repair #{repair_id} needs attention - {days} days without update'
+WHERE NOT EXISTS (SELECT 1 FROM aging_alert_rules WHERE days_threshold = 14);
 

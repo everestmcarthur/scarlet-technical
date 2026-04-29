@@ -1,9 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { pool } = require('../../lib/db');
-const { requireAuth } = require('../../middleware/auth');
 
-router.use(requireAuth);
+function requireAdmin(req, res, next) {
+  if (!req.session?.adminId) return res.status(401).json({ error: 'Unauthorized' });
+  next();
+}
+
+router.use(requireAdmin);
 
 // ── Partial Payments ──────────────────────────────────────────────────────
 router.get('/api/admin/partial-payments', async (req, res) => {
@@ -29,7 +33,7 @@ router.post('/api/admin/partial-payments', async (req, res) => {
     const { rows } = await pool.query(
       `INSERT INTO partial_payments (invoice_id, plan_id, amount, method, reference, notes, created_by)
        VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
-      [invoice_id || null, plan_id || null, amount, method || 'cash', reference, notes, req.session.user.id]
+      [invoice_id || null, plan_id || null, amount, method || 'cash', reference, notes, req.session.adminId]
     );
     res.json(rows[0]);
   } catch (e) { res.status(500).json({ error: e.message }); }
@@ -52,7 +56,7 @@ router.post('/api/admin/refunds', async (req, res) => {
     const { rows } = await pool.query(
       `INSERT INTO refunds (invoice_id, plan_id, customer_id, amount, reason, method, created_by)
        VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
-      [invoice_id||null, plan_id||null, customer_id, amount, reason, method||'original', req.session.user.id]
+      [invoice_id||null, plan_id||null, customer_id, amount, reason, method||'original', req.session.adminId]
     );
     res.json(rows[0]);
   } catch (e) { res.status(500).json({ error: e.message }); }
@@ -64,7 +68,7 @@ router.put('/api/admin/refunds/:id/process', async (req, res) => {
     const { rows } = await pool.query(
       `UPDATE refunds SET status=$1, approved_by=$2, processed_at=CASE WHEN $1='processed' THEN NOW() ELSE processed_at END
        WHERE id=$3 RETURNING *`,
-      [status, req.session.user.id, req.params.id]
+      [status, req.session.adminId, req.params.id]
     );
     res.json(rows[0]);
   } catch (e) { res.status(500).json({ error: e.message }); }
@@ -133,7 +137,7 @@ router.post('/api/admin/deposits', async (req, res) => {
     const { rows } = await pool.query(
       `INSERT INTO deposits (customer_id, repair_id, amount, method, notes, created_by)
        VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
-      [customer_id, repair_id||null, amount, method||'cash', notes, req.session.user.id]
+      [customer_id, repair_id||null, amount, method||'cash', notes, req.session.adminId]
     );
     res.json(rows[0]);
   } catch (e) { res.status(500).json({ error: e.message }); }

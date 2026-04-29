@@ -1,9 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const { pool } = require('../../lib/db');
-const { requireAuth } = require('../../middleware/auth');
 
-router.use(requireAuth);
+function requireAdmin(req, res, next) {
+  if (!req.session?.adminId) return res.status(401).json({ error: 'Unauthorized' });
+  next();
+}
+
+router.use(requireAdmin);
 
 // ── Technician Availability ───────────────────────────────────────────────
 router.get('/api/admin/tech-availability', async (req, res) => {
@@ -132,7 +136,7 @@ router.post('/api/admin/inventory/:id/movements', async (req, res) => {
     const { rows } = await pool.query(
       `INSERT INTO inventory_movements (inventory_id, movement_type, quantity, notes, created_by)
        VALUES ($1,$2,$3,$4,$5) RETURNING *`,
-      [req.params.id, movement_type, quantity, notes, req.session.user.id]
+      [req.params.id, movement_type, quantity, notes, req.session.adminId]
     );
     // Update inventory quantity
     const adjustment = ['purchase', 'return'].includes(movement_type) ? quantity : -quantity;
@@ -147,7 +151,7 @@ router.get('/api/admin/notifications', async (req, res) => {
   try {
     const { rows } = await pool.query(
       `SELECT * FROM notifications WHERE user_id = $1 ORDER BY created_at DESC LIMIT 50`,
-      [req.session.user.id]
+      [req.session.adminId]
     );
     res.json(rows);
   } catch (e) { res.status(500).json({ error: e.message }); }
@@ -155,7 +159,7 @@ router.get('/api/admin/notifications', async (req, res) => {
 
 router.put('/api/admin/notifications/read-all', async (req, res) => {
   try {
-    await pool.query('UPDATE notifications SET read=true WHERE user_id=$1', [req.session.user.id]);
+    await pool.query('UPDATE notifications SET read=true WHERE user_id=$1', [req.session.adminId]);
     res.json({ success: true });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
