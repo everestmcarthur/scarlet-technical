@@ -10,7 +10,7 @@ function requireAdmin(req, res, next) {
 router.use(requireAdmin);
 
 // ── Kanban Board ──────────────────────────────────────────────────────────
-router.get('/api/admin/repair-kanban', async (req, res) => {
+router.get('/admin/api/repair-kanban', async (req, res) => {
   try {
     const { rows } = await pool.query(
       `SELECT rr.*, c.name as customer_name, au.username as tech_name
@@ -33,7 +33,7 @@ router.get('/api/admin/repair-kanban', async (req, res) => {
 });
 
 // Update kanban position / assign tech / set priority
-router.put('/api/admin/repairs/:id/workflow', async (req, res) => {
+router.put('/admin/api/repairs/:id/workflow', async (req, res) => {
   try {
     const { status, priority, assigned_tech, kanban_position, estimated_minutes } = req.body;
     const sets = [];
@@ -55,7 +55,7 @@ router.put('/api/admin/repairs/:id/workflow', async (req, res) => {
 });
 
 // ── Parts Consumption ─────────────────────────────────────────────────────
-router.get('/api/admin/repairs/:id/parts', async (req, res) => {
+router.get('/admin/api/repairs/:id/parts', async (req, res) => {
   try {
     const { rows } = await pool.query(
       `SELECT rp.*, i.name as part_name, i.sku FROM repair_parts rp
@@ -66,7 +66,7 @@ router.get('/api/admin/repairs/:id/parts', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-router.post('/api/admin/repairs/:id/parts', async (req, res) => {
+router.post('/admin/api/repairs/:id/parts', async (req, res) => {
   try {
     const { inventory_id, quantity } = req.body;
     // Get cost and decrement inventory
@@ -87,14 +87,14 @@ router.post('/api/admin/repairs/:id/parts', async (req, res) => {
 });
 
 // ── Repair Templates ──────────────────────────────────────────────────────
-router.get('/api/admin/repair-templates', async (req, res) => {
+router.get('/admin/api/repair-templates', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM repair_templates ORDER BY name');
     res.json(rows);
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-router.post('/api/admin/repair-templates', async (req, res) => {
+router.post('/admin/api/repair-templates', async (req, res) => {
   try {
     const { name, device_type, checklist, estimated_minutes, default_priority, notes } = req.body;
     const { rows } = await pool.query(
@@ -107,7 +107,7 @@ router.post('/api/admin/repair-templates', async (req, res) => {
 });
 
 // ── Diagnostic Reports ────────────────────────────────────────────────────
-router.get('/api/admin/repairs/:id/diagnostic', async (req, res) => {
+router.get('/admin/api/repairs/:id/diagnostic', async (req, res) => {
   try {
     const { rows } = await pool.query(
       'SELECT * FROM diagnostic_reports WHERE repair_id = $1 ORDER BY created_at DESC',
@@ -117,7 +117,7 @@ router.get('/api/admin/repairs/:id/diagnostic', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-router.post('/api/admin/repairs/:id/diagnostic', async (req, res) => {
+router.post('/admin/api/repairs/:id/diagnostic', async (req, res) => {
   try {
     const { device_id, battery_health, storage_used_gb, storage_total_gb, ram_gb,
             screen_condition, wifi_test, bluetooth_test, speaker_test, camera_test,
@@ -134,7 +134,7 @@ router.post('/api/admin/repairs/:id/diagnostic', async (req, res) => {
 });
 
 // ── Aging Alerts ──────────────────────────────────────────────────────────
-router.get('/api/admin/aging-repairs', async (req, res) => {
+router.get('/admin/api/aging-repairs', async (req, res) => {
   try {
     const { rows } = await pool.query(
       `SELECT rr.*, c.name as customer_name,
@@ -151,7 +151,7 @@ router.get('/api/admin/aging-repairs', async (req, res) => {
 });
 
 // ── Technician workload ───────────────────────────────────────────────────
-router.get('/api/admin/tech-workload', async (req, res) => {
+router.get('/admin/api/tech-workload', async (req, res) => {
   try {
     const { rows } = await pool.query(
       `SELECT au.id, au.username, au.full_name,

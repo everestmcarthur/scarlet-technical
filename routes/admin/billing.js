@@ -10,7 +10,7 @@ function requireAdmin(req, res, next) {
 router.use(requireAdmin);
 
 // ── Partial Payments ──────────────────────────────────────────────────────
-router.get('/api/admin/partial-payments', async (req, res) => {
+router.get('/admin/api/partial-payments', async (req, res) => {
   try {
     const { invoice_id, plan_id } = req.query;
     let q = `SELECT pp.*, c.name as customer_name FROM partial_payments pp
@@ -27,7 +27,7 @@ router.get('/api/admin/partial-payments', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-router.post('/api/admin/partial-payments', async (req, res) => {
+router.post('/admin/api/partial-payments', async (req, res) => {
   try {
     const { invoice_id, plan_id, amount, method, reference, notes } = req.body;
     const { rows } = await pool.query(
@@ -40,7 +40,7 @@ router.post('/api/admin/partial-payments', async (req, res) => {
 });
 
 // ── Refunds ───────────────────────────────────────────────────────────────
-router.get('/api/admin/refunds', async (req, res) => {
+router.get('/admin/api/refunds', async (req, res) => {
   try {
     const { rows } = await pool.query(
       `SELECT r.*, c.name as customer_name FROM refunds r
@@ -50,7 +50,7 @@ router.get('/api/admin/refunds', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-router.post('/api/admin/refunds', async (req, res) => {
+router.post('/admin/api/refunds', async (req, res) => {
   try {
     const { invoice_id, plan_id, customer_id, amount, reason, method } = req.body;
     const { rows } = await pool.query(
@@ -62,7 +62,7 @@ router.post('/api/admin/refunds', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-router.put('/api/admin/refunds/:id/process', async (req, res) => {
+router.put('/admin/api/refunds/:id/process', async (req, res) => {
   try {
     const { status } = req.body;
     const { rows } = await pool.query(
@@ -75,7 +75,7 @@ router.put('/api/admin/refunds/:id/process', async (req, res) => {
 });
 
 // ── Recurring Invoices ────────────────────────────────────────────────────
-router.get('/api/admin/recurring-invoices', async (req, res) => {
+router.get('/admin/api/recurring-invoices', async (req, res) => {
   try {
     const { rows } = await pool.query(
       `SELECT ri.*, c.name as customer_name FROM recurring_invoices ri
@@ -85,7 +85,7 @@ router.get('/api/admin/recurring-invoices', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-router.post('/api/admin/recurring-invoices', async (req, res) => {
+router.post('/admin/api/recurring-invoices', async (req, res) => {
   try {
     const { customer_id, description, amount, frequency, next_due } = req.body;
     const { rows } = await pool.query(
@@ -97,7 +97,7 @@ router.post('/api/admin/recurring-invoices', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-router.put('/api/admin/recurring-invoices/:id', async (req, res) => {
+router.put('/admin/api/recurring-invoices/:id', async (req, res) => {
   try {
     const { description, amount, frequency, next_due, active } = req.body;
     const { rows } = await pool.query(
@@ -110,7 +110,7 @@ router.put('/api/admin/recurring-invoices/:id', async (req, res) => {
 });
 
 // ── Late Fees ─────────────────────────────────────────────────────────────
-router.get('/api/admin/late-fees', async (req, res) => {
+router.get('/admin/api/late-fees', async (req, res) => {
   try {
     const { rows } = await pool.query(
       `SELECT lf.*, c.name as customer_name FROM late_fees lf
@@ -121,7 +121,7 @@ router.get('/api/admin/late-fees', async (req, res) => {
 });
 
 // ── Deposits ──────────────────────────────────────────────────────────────
-router.get('/api/admin/deposits', async (req, res) => {
+router.get('/admin/api/deposits', async (req, res) => {
   try {
     const { rows } = await pool.query(
       `SELECT d.*, c.name as customer_name FROM deposits d
@@ -131,7 +131,7 @@ router.get('/api/admin/deposits', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-router.post('/api/admin/deposits', async (req, res) => {
+router.post('/admin/api/deposits', async (req, res) => {
   try {
     const { customer_id, repair_id, amount, method, notes } = req.body;
     const { rows } = await pool.query(
@@ -144,7 +144,7 @@ router.post('/api/admin/deposits', async (req, res) => {
 });
 
 // ── Financial Reports ─────────────────────────────────────────────────────
-router.get('/api/admin/financial-report', async (req, res) => {
+router.get('/admin/api/financial-report', async (req, res) => {
   try {
     const { period } = req.query; // daily, weekly, monthly
     let dateFilter = "created_at >= NOW() - INTERVAL '30 days'";

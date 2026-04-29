@@ -10,7 +10,7 @@ function requireAdmin(req, res, next) {
 router.use(requireAdmin);
 
 // ── Technician Availability ───────────────────────────────────────────────
-router.get('/api/admin/tech-availability', async (req, res) => {
+router.get('/admin/api/tech-availability', async (req, res) => {
   try {
     const { rows } = await pool.query(
       `SELECT ta.*, au.username, au.full_name FROM tech_availability ta
@@ -20,7 +20,7 @@ router.get('/api/admin/tech-availability', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-router.post('/api/admin/tech-availability', async (req, res) => {
+router.post('/admin/api/tech-availability', async (req, res) => {
   try {
     const { admin_user_id, day_of_week, start_time, end_time } = req.body;
     const { rows } = await pool.query(
@@ -32,7 +32,7 @@ router.post('/api/admin/tech-availability', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-router.delete('/api/admin/tech-availability/:id', async (req, res) => {
+router.delete('/admin/api/tech-availability/:id', async (req, res) => {
   try {
     await pool.query('DELETE FROM tech_availability WHERE id=$1', [req.params.id]);
     res.json({ success: true });
@@ -40,7 +40,7 @@ router.delete('/api/admin/tech-availability/:id', async (req, res) => {
 });
 
 // ── Recurring Appointments ────────────────────────────────────────────────
-router.post('/api/admin/appointments/:id/make-recurring', async (req, res) => {
+router.post('/admin/api/appointments/:id/make-recurring', async (req, res) => {
   try {
     const { pattern, end_date } = req.body;
     const { rows } = await pool.query(
@@ -53,7 +53,7 @@ router.post('/api/admin/appointments/:id/make-recurring', async (req, res) => {
 });
 
 // ── Wait Time Estimator ───────────────────────────────────────────────────
-router.get('/api/admin/wait-estimate', async (req, res) => {
+router.get('/admin/api/wait-estimate', async (req, res) => {
   try {
     // Count active queue items and average service time
     const queue = await pool.query(
@@ -75,14 +75,14 @@ router.get('/api/admin/wait-estimate', async (req, res) => {
 });
 
 // ── SLA Policies ──────────────────────────────────────────────────────────
-router.get('/api/admin/sla-policies', async (req, res) => {
+router.get('/admin/api/sla-policies', async (req, res) => {
   try {
     const { rows } = await pool.query('SELECT * FROM sla_policies ORDER BY response_hours');
     res.json(rows);
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-router.post('/api/admin/sla-policies', async (req, res) => {
+router.post('/admin/api/sla-policies', async (req, res) => {
   try {
     const { name, response_hours, resolution_hours, priority } = req.body;
     const { rows } = await pool.query(
@@ -95,7 +95,7 @@ router.post('/api/admin/sla-policies', async (req, res) => {
 });
 
 // ── Escalation Rules ──────────────────────────────────────────────────────
-router.get('/api/admin/escalation-rules', async (req, res) => {
+router.get('/admin/api/escalation-rules', async (req, res) => {
   try {
     const { rows } = await pool.query(
       `SELECT er.*, au.username as escalate_to_name FROM escalation_rules er
@@ -105,7 +105,7 @@ router.get('/api/admin/escalation-rules', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-router.post('/api/admin/escalation-rules', async (req, res) => {
+router.post('/admin/api/escalation-rules', async (req, res) => {
   try {
     const { name, trigger_type, trigger_value, escalate_to, notify_via } = req.body;
     const { rows } = await pool.query(
@@ -118,7 +118,7 @@ router.post('/api/admin/escalation-rules', async (req, res) => {
 });
 
 // ── Inventory Movements ───────────────────────────────────────────────────
-router.get('/api/admin/inventory/:id/movements', async (req, res) => {
+router.get('/admin/api/inventory/:id/movements', async (req, res) => {
   try {
     const { rows } = await pool.query(
       `SELECT im.*, au.username as user_name FROM inventory_movements im
@@ -130,7 +130,7 @@ router.get('/api/admin/inventory/:id/movements', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-router.post('/api/admin/inventory/:id/movements', async (req, res) => {
+router.post('/admin/api/inventory/:id/movements', async (req, res) => {
   try {
     const { movement_type, quantity, notes } = req.body;
     const { rows } = await pool.query(
@@ -147,7 +147,7 @@ router.post('/api/admin/inventory/:id/movements', async (req, res) => {
 });
 
 // ── Notifications ─────────────────────────────────────────────────────────
-router.get('/api/admin/notifications', async (req, res) => {
+router.get('/admin/api/notifications', async (req, res) => {
   try {
     const { rows } = await pool.query(
       `SELECT * FROM notifications WHERE user_id = $1 ORDER BY created_at DESC LIMIT 50`,
@@ -157,7 +157,7 @@ router.get('/api/admin/notifications', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-router.put('/api/admin/notifications/read-all', async (req, res) => {
+router.put('/admin/api/notifications/read-all', async (req, res) => {
   try {
     await pool.query('UPDATE notifications SET read=true WHERE user_id=$1', [req.session.adminId]);
     res.json({ success: true });

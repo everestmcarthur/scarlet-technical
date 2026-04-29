@@ -10,7 +10,7 @@ function requireAdmin(req, res, next) {
 router.use(requireAdmin);
 
 // ── Executive Dashboard Stats ─────────────────────────────────────────────
-router.get('/api/admin/analytics/executive', async (req, res) => {
+router.get('/admin/api/analytics/executive', async (req, res) => {
   try {
     const [customers, repairs, revenue, tickets, appointments] = await Promise.all([
       pool.query(`SELECT 
@@ -44,7 +44,7 @@ router.get('/api/admin/analytics/executive', async (req, res) => {
 });
 
 // ── Revenue Analytics ─────────────────────────────────────────────────────
-router.get('/api/admin/analytics/revenue', async (req, res) => {
+router.get('/admin/api/analytics/revenue', async (req, res) => {
   try {
     const { period } = req.query;
     let interval = '30 days';
@@ -87,7 +87,7 @@ router.get('/api/admin/analytics/revenue', async (req, res) => {
 });
 
 // ── Repair Analytics ──────────────────────────────────────────────────────
-router.get('/api/admin/analytics/repairs', async (req, res) => {
+router.get('/admin/api/analytics/repairs', async (req, res) => {
   try {
     const [byStatus, byType, avgTime, byTech] = await Promise.all([
       pool.query(`SELECT status, COUNT(*) as count FROM repair_requests GROUP BY status`),
@@ -116,7 +116,7 @@ router.get('/api/admin/analytics/repairs', async (req, res) => {
 });
 
 // ── Customer Analytics ────────────────────────────────────────────────────
-router.get('/api/admin/analytics/customers', async (req, res) => {
+router.get('/admin/api/analytics/customers', async (req, res) => {
   try {
     const [growth, topCustomers, retention] = await Promise.all([
       pool.query(
@@ -150,7 +150,7 @@ router.get('/api/admin/analytics/customers', async (req, res) => {
 });
 
 // ── Inventory Analytics ───────────────────────────────────────────────────
-router.get('/api/admin/analytics/inventory', async (req, res) => {
+router.get('/admin/api/analytics/inventory', async (req, res) => {
   try {
     const [lowStock, topSelling, valuation] = await Promise.all([
       pool.query(`SELECT * FROM inventory WHERE quantity <= COALESCE(reorder_point, 3) ORDER BY quantity ASC LIMIT 10`),
@@ -173,7 +173,7 @@ router.get('/api/admin/analytics/inventory', async (req, res) => {
 });
 
 // ── Global Search ─────────────────────────────────────────────────────────
-router.get('/api/admin/search', async (req, res) => {
+router.get('/admin/api/search', async (req, res) => {
   try {
     const { q } = req.query;
     if (!q || q.length < 2) return res.json([]);
@@ -191,7 +191,7 @@ router.get('/api/admin/search', async (req, res) => {
 });
 
 // ── NPS Surveys ───────────────────────────────────────────────────────────
-router.get('/api/admin/nps', async (req, res) => {
+router.get('/admin/api/nps', async (req, res) => {
   try {
     const { rows } = await pool.query(
       `SELECT ns.*, c.name as customer_name FROM nps_surveys ns
@@ -206,7 +206,7 @@ router.get('/api/admin/nps', async (req, res) => {
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-router.post('/api/admin/nps/send', async (req, res) => {
+router.post('/admin/api/nps/send', async (req, res) => {
   try {
     const { customer_id, repair_id } = req.body;
     const { rows } = await pool.query(

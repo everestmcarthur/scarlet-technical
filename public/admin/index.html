@@ -7437,7 +7437,7 @@ async function loadAnalyticsView(view, btn) {
   el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
   try {
     if (view === 'executive') {
-      const data = await api('/api/admin/analytics/executive');
+      const data = await api('GET', '/admin/api/analytics/executive');
       el.innerHTML = `
         <div class="stat-grid">
           <div class="stat-card"><div class="stat-label">Total Customers</div><div class="stat-value">${data.customers?.total || 0}</div><div class="stat-sub">+${data.customers?.new_7d || 0} this week</div></div>
@@ -7452,18 +7452,18 @@ async function loadAnalyticsView(view, btn) {
           <a href="/admin/api/export/payments" class="btn btn-export">Export Payments</a>
         </div>`;
     } else if (view === 'revenue') {
-      const data = await api('/api/admin/analytics/revenue?period=month');
+      const data = await api('GET', '/admin/api/analytics/revenue?period=month');
       let rows = (data||[]).map(r => `<tr><td>${new Date(r.period).toLocaleDateString()}</td><td class="text-right">$${r.revenue.toFixed(2)}</td><td class="text-right">$${r.expenses.toFixed(2)}</td><td class="text-right" style="color:${r.profit>=0?'#16a34a':'#dc2626'}">$${r.profit.toFixed(2)}</td></tr>`).join('');
       el.innerHTML = `<div class="card" style="margin-top:12px"><table class="data-table"><thead><tr><th>Period</th><th class="text-right">Revenue</th><th class="text-right">Expenses</th><th class="text-right">Profit</th></tr></thead><tbody>${rows || '<tr><td colspan="4" style="text-align:center;padding:20px">No data yet</td></tr>'}</tbody></table></div>`;
     } else if (view === 'repairs') {
-      const data = await api('/api/admin/analytics/repairs');
+      const data = await api('GET', '/admin/api/analytics/repairs');
       let statusHtml = (data.by_status||[]).map(r => `<div class="stat-card"><div class="stat-label">${r.status}</div><div class="stat-value">${r.count}</div></div>`).join('');
       let techHtml = (data.by_technician||[]).map(r => `<tr><td>${r.full_name||r.username}</td><td>${r.total}</td><td>${r.completed}</td><td>${r.avg_hours ? Math.round(r.avg_hours)+'h' : 'N/A'}</td></tr>`).join('');
       el.innerHTML = `<div class="stat-grid">${statusHtml}</div>
         <h3 style="margin:16px 0 8px;font-size:14px">By Technician</h3>
         <div class="card"><table class="data-table"><thead><tr><th>Technician</th><th>Total</th><th>Completed</th><th>Avg Time</th></tr></thead><tbody>${techHtml || '<tr><td colspan="4" style="text-align:center;padding:20px">No tech assignments yet</td></tr>'}</tbody></table></div>`;
     } else if (view === 'customers') {
-      const data = await api('/api/admin/analytics/customers');
+      const data = await api('GET', '/admin/api/analytics/customers');
       let topHtml = (data.top_customers||[]).map(r => `<tr><td>${esc(r.name)}</td><td>${r.email||''}</td><td>${r.total_repairs}</td><td>$${parseFloat(r.total_spent||0).toFixed(2)}</td></tr>`).join('');
       el.innerHTML = `<div class="stat-grid">
         <div class="stat-card"><div class="stat-label">Total Customers</div><div class="stat-value">${data.retention?.total || 0}</div></div>
@@ -7472,7 +7472,7 @@ async function loadAnalyticsView(view, btn) {
       <h3 style="margin:16px 0 8px;font-size:14px">Top Customers by Revenue</h3>
       <div class="card"><table class="data-table"><thead><tr><th>Name</th><th>Email</th><th>Repairs</th><th>Spent</th></tr></thead><tbody>${topHtml || '<tr><td colspan="4" style="text-align:center;padding:20px">No data yet</td></tr>'}</tbody></table></div>`;
     } else if (view === 'inventory') {
-      const data = await api('/api/admin/analytics/inventory');
+      const data = await api('GET', '/admin/api/analytics/inventory');
       let lowHtml = (data.low_stock||[]).map(r => `<tr><td>${esc(r.name)}</td><td>${r.sku||''}</td><td style="color:#dc2626;font-weight:600">${r.quantity}</td><td>${r.reorder_level||0}</td></tr>`).join('');
       el.innerHTML = `<div class="stat-grid">
         <div class="stat-card"><div class="stat-label">Total Items</div><div class="stat-value">${data.valuation?.total_items || 0}</div></div>
@@ -7501,7 +7501,7 @@ async function loadKanban() {
   const el = document.getElementById('kanban-board');
   el.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
   try {
-    const data = await api('/api/admin/repair-kanban');
+    const data = await api('GET', '/admin/api/repair-kanban');
     const statuses = ['received','diagnosed','in_progress','waiting_parts','ready','on_hold'];
     const labels = { received:'Received', diagnosed:'Diagnosed', in_progress:'In Progress', waiting_parts:'Waiting Parts', ready:'Ready', on_hold:'On Hold' };
     el.innerHTML = statuses.map(s => {
@@ -7522,7 +7522,7 @@ async function loadKanban() {
 async function loadAging() {
   const el = document.getElementById('aging-list');
   try {
-    const data = await api('/api/admin/aging-repairs');
+    const data = await api('GET', '/admin/api/aging-repairs');
     if (!data.length) { el.innerHTML = '<div class="card" style="padding:20px;text-align:center">✅ No aging repairs!</div>'; return; }
     el.innerHTML = `<div class="card"><table class="data-table"><thead><tr><th>ID</th><th>Customer</th><th>Status</th><th>Days Open</th><th>Days Since Update</th></tr></thead><tbody>
     ${data.map(r => `<tr style="background:${r.days_since_update>7?'#fef2f2':''}"><td>#${r.id}</td><td>${esc(r.customer_name||'')}</td><td>${r.status}</td><td>${Math.round(r.days_open||0)}</td><td style="font-weight:600;color:#dc2626">${Math.round(r.days_since_update||0)}</td></tr>`).join('')}
@@ -7533,7 +7533,7 @@ async function loadAging() {
 async function loadWorkload() {
   const el = document.getElementById('workload-list');
   try {
-    const data = await api('/api/admin/tech-workload');
+    const data = await api('GET', '/admin/api/tech-workload');
     el.innerHTML = `<div class="stat-grid">${data.map(t => `<div class="stat-card">
       <div class="stat-label">👤 ${esc(t.full_name||t.username)}</div>
       <div class="stat-value">${t.active_repairs||0}</div>
@@ -7563,7 +7563,7 @@ async function runGlobalSearch(q) {
   const el = document.getElementById('global-search-results');
   if (!q || q.length < 2) { el.innerHTML = ''; return; }
   try {
-    const results = await api(`/api/admin/search?q=${encodeURIComponent(q)}`);
+    const results = await api('GET', `/admin/api/search?q=${encodeURIComponent(q)}`);
     if (!results.length) { el.innerHTML = '<div style="padding:16px;text-align:center;color:var(--gray-400)">No results</div>'; return; }
     el.innerHTML = results.map(r => {
       const name = r.name || r.subject || r.device_type || r.description || `#${r.id}`;
