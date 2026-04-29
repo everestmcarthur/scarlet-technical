@@ -24,11 +24,14 @@ const { Pool } = require('pg');
 const fs = require('fs');
 const path = require('path');
 
+const dbUrl = process.env.DATABASE_URL || '';
+const isProduction = process.env.NODE_ENV === 'production';
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_URL?.includes('supabase') || process.env.DB_SSL === 'true'
+  connectionString: dbUrl,
+  ssl: isProduction || dbUrl.includes('supabase')
     ? { rejectUnauthorized: false }
-    : (process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false),
+    : false,
 });
 
 async function migrate() {
