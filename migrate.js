@@ -1,8 +1,9 @@
 /**
  * Database Migration Runner
  *
- * Runs all .sql files in migrations/ in order.
- * Tracks completed migrations in a _migrations table.
+ * Supports both .js and .sql migration files.
+ * JS migrations: module.exports = { name, up: async (client) => { ... } }
+ * SQL migrations: raw SQL files
  */
 require('dotenv').config();
 const { Pool } = require('pg');
@@ -12,7 +13,7 @@ const path = require('path');
 const dbUrl = process.env.DATABASE_URL || '';
 const isProduction = process.env.NODE_ENV === 'production';
 
-const needsSSL = dbUrl.includes('supabase') || dbUrl.includes('pooler') || 
+const needsSSL = dbUrl.includes('supabase') || dbUrl.includes('pooler') ||
                  (isProduction && dbUrl.includes('.render.com'));
 
 const pool = new Pool({
@@ -22,7 +23,7 @@ const pool = new Pool({
 
 async function migrate() {
   const client = await pool.connect();
-  
+
   try {
     // Create migrations tracking table
     await client.query(`
@@ -37,7 +38,7 @@ async function migrate() {
     const { rows: completed } = await client.query('SELECT name FROM _migrations ORDER BY name');
     const done = new Set(completed.map(r => r.name));
 
-    // Find migration files
+    // Find migration files (.js and .sql)
     const migrationsDir = path.join(__dirname, 'migrations');
     if (!fs.existsSync(migrationsDir)) {
       console.log('No migrations directory found');
@@ -45,22 +46,35 @@ async function migrate() {
     }
 
     const files = fs.readdirSync(migrationsDir)
-      .filter(f => f.endsWith('.sql'))
+      .filter(f => f.endsWith('.js') || f.endsWith('.sql'))
       .sort();
 
     let ran = 0;
     for (const file of files) {
-      if (done.has(file)) {
+      const migName = file.replace(/\.(js|sql)$/, '');
+      if (done.has(migName)) {
         continue;
       }
 
       console.log(`Running migration: ${file}`);
-      const sql = fs.readFileSync(path.join(migrationsDir, file), 'utf8');
-      
+      const filePath = path.join(migrationsDir, file);
+
       await client.query('BEGIN');
       try {
-        await client.query(sql);
-        await client.query('INSERT INTO _migrations (name) VALUES ($1)', [file]);
+        if (file.endsWith('.js')) {
+          const migration = require(filePath);
+          if (typeof migration.up === 'function') {
+            await migration.up(client);
+          } else {
+            throw new Error(`Migration ${file} has no up() function`);
+          }
+        } else {
+          // .sql file
+          const sql = fs.readFileSync(filePath, 'utf8');
+          await client.query(sql);
+        }
+
+        await client.query('INSERT INTO _migrations (name) VALUES ($1)', [migName]);
         await client.query('COMMIT');
         ran++;
         console.log(`  ✓ ${file}`);
