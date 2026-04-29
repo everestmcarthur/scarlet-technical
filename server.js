@@ -178,21 +178,34 @@ async function runMigrations() {
 }
 
 async function start() {
+  // 1. Test database connection
   try {
     await checkConnection();
     logger.info('Database connected');
-
-    // Run migrations before starting
-    await runMigrations();
-
-    app.listen(PORT, () => {
-      logger.info({ port: PORT, env: process.env.NODE_ENV || 'development' },
-        `Scarlet Technical v2.1.0 running on port ${PORT}`);
-    });
   } catch (err) {
-    logger.fatal({ err }, 'Failed to start server');
-    process.exit(1);
+    logger.error({ err: err.message }, 'Database connection failed — will retry on first request');
   }
+
+  // 2. Run migrations (non-fatal)
+  try {
+    await runMigrations();
+  } catch (err) {
+    logger.error({ err: err.message }, 'Migration failed — starting server anyway');
+  }
+
+  // 3. Always start the HTTP server
+  app.listen(PORT, () => {
+    logger.info({ port: PORT, env: process.env.NODE_ENV || 'development' },
+      `Scarlet Technical v2.1.0 running on port ${PORT}`);
+  });
 }
 
-start();
+start().catch(err => {
+  console.error('Fatal startup error:', err);
+  // Last resort — start minimal server
+  const http = require('http');
+  http.createServer((req, res) => {
+    res.writeHead(500, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: 'Server startup failed', detail: err.message }));
+  }).listen(process.env.PORT || 10000);
+});
