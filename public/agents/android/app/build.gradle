@@ -4,9 +4,11 @@ plugins {
 
 android {
     compileSdkVersion 33
+
+    namespace "com.scartech.scarlettechnical"
     
     defaultConfig {
-        applicationId "com.scarlet.agent"
+        applicationId "com.scartech.scarlettechnical"
         minSdkVersion 26
         targetSdkVersion 33
         versionCode 1
