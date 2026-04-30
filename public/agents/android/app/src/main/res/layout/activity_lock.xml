@@ -76,7 +76,7 @@
                 android:hint="Enter 6-digit PIN"
                 android:textSize="18sp"
                 android:textColor="#FFFFFF"
-                android:hintTextColor="#666666"
+                android:textColorHint="#666666"
                 android:background="#2a2a2a"
                 android:padding="12dp"
                 android:inputType="number"
