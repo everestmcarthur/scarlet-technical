@@ -13,7 +13,7 @@ import java.util.UUID;
 
 public class ApiClient {
     private static final String PREFS_NAME = "ScarletAgentPrefs";
-    private static final String AGENT_VERSION = "1.0.0";
+    private static final String AGENT_VERSION = "1.1.0";
 
     // ─── Response classes ────────────────────────────────────────────────────
 
@@ -140,6 +140,33 @@ public class ApiClient {
             body.put("hostname", Build.MANUFACTURER + " " + Build.MODEL);
             body.put("os_info", "Android " + Build.VERSION.RELEASE);
             body.put("agent_version", AGENT_VERSION);
+
+            // Collect telemetry
+            try {
+                android.app.ActivityManager am = (android.app.ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+                if (am != null) {
+                    android.app.ActivityManager.MemoryInfo mi = new android.app.ActivityManager.MemoryInfo();
+                    am.getMemoryInfo(mi);
+                    double memUsed = (1.0 - (double)mi.availMem / mi.totalMem) * 100;
+                    body.put("memory_usage", String.format("%.1f", memUsed));
+                }
+            } catch (Exception ignored) {}
+            try {
+                android.os.StatFs sf = new android.os.StatFs(android.os.Environment.getDataDirectory().getPath());
+                double diskUsed = (1.0 - (double)sf.getAvailableBytes() / sf.getTotalBytes()) * 100;
+                body.put("disk_usage", String.format("%.1f", diskUsed));
+            } catch (Exception ignored) {}
+            try {
+                android.content.Intent batteryIntent = context.registerReceiver(null, new android.content.IntentFilter(android.content.Intent.ACTION_BATTERY_CHANGED));
+                if (batteryIntent != null) {
+                    int level = batteryIntent.getIntExtra(android.os.BatteryManager.EXTRA_LEVEL, -1);
+                    int scale = batteryIntent.getIntExtra(android.os.BatteryManager.EXTRA_SCALE, -1);
+                    if (level >= 0 && scale > 0) body.put("battery", String.valueOf((int)(level * 100.0 / scale)));
+                }
+            } catch (Exception ignored) {}
+            try {
+                body.put("uptime", String.valueOf(android.os.SystemClock.elapsedRealtime() / 1000));
+            } catch (Exception ignored) {}
 
             JSONObject resp = postJson(sUrl + "/api/agent/heartbeat", body);
             if (resp.getInt("_http_code") != 200) return null;

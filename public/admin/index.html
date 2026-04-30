@@ -4329,9 +4329,11 @@ async function viewDeviceDetail(deviceId) {
   try {
     const data = await api('GET', `/admin/api/devices/${deviceId}`);
     if (!data) return;
-    const d = data.device;
+    const d = data.device || data;
     const cmds = data.commands || [];
-    const auditEntries = data.audit || [];
+    const unlockReqs = data.unlock_requests || [];
+    const auditEntries = data.audit_log || data.audit || [];
+    const hasPin = data.has_override_pin;
 
     const lockColor = d.lock_status === 'locked' ? '#ef4444' : d.lock_status === 'wiped' ? '#6b7280' : '#22c55e';
 
@@ -4339,21 +4341,58 @@ async function viewDeviceDetail(deviceId) {
       <td>${esc(c.command)}</td>
       <td><span style="color:${c.status==='executed'?'#22c55e':c.status==='failed'?'#ef4444':'#f59e0b'}">${esc(c.status)}</span></td>
       <td>${esc(c.issued_by_name || 'System')}</td>
-      <td>${c.issued_at ? new Date(c.issued_at).toLocaleString() : '—'}</td>
+      <td>${c.created_at ? new Date(c.created_at).toLocaleString() : '—'}</td>
     </tr>`).join('');
 
-    const auditRows = auditEntries.slice(0,10).map(a => `<tr>
+    const unlockRows = unlockReqs.map(ur => `<tr>
+      <td>${esc(ur.reason || '—')}</td>
+      <td>${esc(ur.contact_info || '—')}</td>
+      <td><span style="color:${ur.status==='pending'?'#f59e0b':ur.status==='approved'?'#22c55e':'#ef4444'}">${esc(ur.status)}</span></td>
+      <td>${ur.created_at ? new Date(ur.created_at).toLocaleString() : '—'}</td>
+      <td>${ur.status === 'pending' ? `
+        <button class="btn btn-sm" style="background:#22c55e;color:#fff;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:11px" onclick="reviewUnlockRequest(${ur.id},'approve',${deviceId})">✓ Approve</button>
+        <button class="btn btn-sm" style="background:#ef4444;color:#fff;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;font-size:11px" onclick="reviewUnlockRequest(${ur.id},'deny',${deviceId})">✗ Deny</button>
+      ` : esc(ur.reviewed_by_name || '—')}</td>
+    </tr>`).join('');
+
+    const auditRows = auditEntries.slice(0,15).map(a => `<tr>
       <td>${esc(a.action)}</td>
       <td>${esc(a.admin_name || 'Agent')}</td>
-      <td>${new Date(a.created_at).toLocaleString()}</td>
+      <td>${a.created_at ? new Date(a.created_at).toLocaleString() : '—'}</td>
     </tr>`).join('');
+
+    // Telemetry section
+    const hasTelemetry = d.cpu_usage || d.memory_usage || d.disk_usage || d.battery;
+    const telemetryHtml = hasTelemetry ? `
+      <h4 style="margin:20px 0 8px;font-size:13px;color:var(--text-muted);text-transform:uppercase">Device Telemetry</h4>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px">
+        ${d.cpu_usage != null ? `<div style="background:var(--gray-50);padding:10px;border-radius:8px;text-align:center">
+          <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase">CPU</div>
+          <div style="font-size:18px;font-weight:700;color:${parseFloat(d.cpu_usage)>80?'#ef4444':'var(--text)'}">${d.cpu_usage}%</div>
+        </div>` : ''}
+        ${d.memory_usage != null ? `<div style="background:var(--gray-50);padding:10px;border-radius:8px;text-align:center">
+          <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase">Memory</div>
+          <div style="font-size:18px;font-weight:700;color:${parseFloat(d.memory_usage)>80?'#ef4444':'var(--text)'}">${d.memory_usage}%</div>
+        </div>` : ''}
+        ${d.disk_usage != null ? `<div style="background:var(--gray-50);padding:10px;border-radius:8px;text-align:center">
+          <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase">Disk</div>
+          <div style="font-size:18px;font-weight:700;color:${parseFloat(d.disk_usage)>85?'#ef4444':'var(--text)'}">${d.disk_usage}%</div>
+        </div>` : ''}
+        ${d.battery != null ? `<div style="background:var(--gray-50);padding:10px;border-radius:8px;text-align:center">
+          <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase">Battery</div>
+          <div style="font-size:18px;font-weight:700;color:${parseFloat(d.battery)<20?'#ef4444':'var(--text)'}">${d.battery}%</div>
+        </div>` : ''}
+      </div>
+    ` : '';
+
+    const pendingUnlocks = unlockReqs.filter(u => u.status === 'pending').length;
 
     body.innerHTML = `
       <div style="padding:20px">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">
           <div style="background:var(--gray-50);padding:12px;border-radius:8px">
             <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px">Platform</div>
-            <div>${esc(d.platform)}</div>
+            <div>${d.platform === 'windows' ? '🪟' : d.platform === 'linux' ? '🐧' : '🤖'} ${esc(d.platform)}</div>
           </div>
           <div style="background:var(--gray-50);padding:12px;border-radius:8px">
             <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px">Hostname</div>
@@ -4365,11 +4404,11 @@ async function viewDeviceDetail(deviceId) {
           </div>
           <div style="background:var(--gray-50);padding:12px;border-radius:8px">
             <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px">Lock Status</div>
-            <div style="font-weight:600;color:${lockColor}">${esc(d.lock_status)}</div>
+            <div style="font-weight:600;color:${lockColor}">${d.lock_status === 'locked' ? '🔒 ' : d.lock_status === 'wiped' ? '🗑 ' : '🔓 '}${esc(d.lock_status)}</div>
           </div>
           <div style="background:var(--gray-50);padding:12px;border-radius:8px">
             <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px">Online Status</div>
-            <div>${d.online_status === 'online' ? '● Online' : '○ Offline'}</div>
+            <div>${d.online_status === 'online' ? '<span style="color:#22c55e">● Online</span>' : '<span style="color:#6b7280">○ Offline</span>'}</div>
           </div>
           <div style="background:var(--gray-50);padding:12px;border-radius:8px">
             <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px">Last Seen</div>
@@ -4383,14 +4422,46 @@ async function viewDeviceDetail(deviceId) {
             <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px">Enrolled</div>
             <div style="font-size:12px">${d.enrolled_at ? new Date(d.enrolled_at).toLocaleString() : '—'}</div>
           </div>
+          <div style="background:var(--gray-50);padding:12px;border-radius:8px">
+            <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px">Device UUID</div>
+            <div style="font-size:11px;font-family:monospace;word-break:break-all">${esc(d.device_uuid || '—')}</div>
+          </div>
+          <div style="background:var(--gray-50);padding:12px;border-radius:8px">
+            <div style="font-size:11px;color:var(--text-muted);text-transform:uppercase;margin-bottom:4px">Agent Version</div>
+            <div>${esc(d.agent_version || '—')}</div>
+          </div>
         </div>
 
-        <div style="display:flex;gap:8px;margin-bottom:20px">
-          ${d.lock_status !== 'locked' ? `<button class="btn btn-sm" style="background:#ef4444;color:#fff" onclick="issueDeviceCommand(${d.id},'lock','${esc(d.hostname||'')}');closeDetailPanel()">🔒 Lock Device</button>` : ''}
-          ${d.lock_status === 'locked' ? `<button class="btn btn-sm" style="background:#22c55e;color:#fff" onclick="issueDeviceCommand(${d.id},'unlock','${esc(d.hostname||'')}');closeDetailPanel()">🔓 Unlock Device</button>` : ''}
-          <button class="btn btn-sm" style="background:#f59e0b;color:#fff" onclick="issueDeviceCommand(${d.id},'wipe','${esc(d.hostname||'')}');closeDetailPanel()">🗑 Wipe Device</button>
-          <button class="btn btn-sm btn-danger" onclick="unenrollDevice(${d.id})">Unenroll</button>
+        <!-- Command buttons -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px">
+          ${d.lock_status !== 'locked' ? `<button class="btn btn-sm" style="background:#ef4444;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px" onclick="issueDeviceCommand(${d.id},'lock','${esc(d.hostname||'')}');closeDetailPanel()">🔒 Lock</button>` : ''}
+          ${d.lock_status === 'locked' ? `<button class="btn btn-sm" style="background:#22c55e;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px" onclick="issueDeviceCommand(${d.id},'unlock','${esc(d.hostname||'')}');closeDetailPanel()">🔓 Unlock</button>` : ''}
+          <button class="btn btn-sm" style="background:#f59e0b;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px" onclick="issueDeviceCommand(${d.id},'wipe','${esc(d.hostname||'')}');closeDetailPanel()">🗑 Wipe</button>
+          <button class="btn btn-sm" style="background:#7c3aed;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px" onclick="generateOverridePin(${d.id})">🔑 Generate PIN</button>
+          ${hasPin ? `<button class="btn btn-sm" style="background:#6b7280;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px" onclick="revokeOverridePin(${d.id})">Revoke PIN</button>` : ''}
+          <button class="btn btn-sm" style="background:#dc2626;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:13px" onclick="unenrollDevice(${d.id})">⛔ Unenroll</button>
         </div>
+
+        ${hasPin ? `<div style="background:#7c3aed11;border:1px solid #7c3aed44;border-radius:8px;padding:12px;margin-bottom:20px">
+          <div style="font-size:11px;color:#7c3aed;text-transform:uppercase;font-weight:600;margin-bottom:4px">🔑 Active Override PIN</div>
+          <div style="font-size:11px;color:var(--text-muted)">Expires: ${d.override_pin_expires_at ? new Date(d.override_pin_expires_at).toLocaleString() : '?'} · Attempts: ${d.override_pin_attempts || 0}/5</div>
+        </div>` : ''}
+
+        <div id="pin-result-${deviceId}" style="display:none;background:#7c3aed11;border:1px solid #7c3aed44;border-radius:8px;padding:16px;margin-bottom:20px"></div>
+
+        ${telemetryHtml}
+
+        ${pendingUnlocks > 0 ? `
+          <h4 style="margin:0 0 8px;font-size:13px;color:var(--text-muted);text-transform:uppercase">⚠️ Pending Unlock Requests (${pendingUnlocks})</h4>
+          <div style="margin-bottom:20px;overflow-x:auto">
+            <table style="width:100%;font-size:12px"><thead><tr><th>Reason</th><th>Contact</th><th>Status</th><th>Submitted</th><th>Action</th></tr></thead><tbody>${unlockRows}</tbody></table>
+          </div>
+        ` : unlockReqs.length > 0 ? `
+          <h4 style="margin:0 0 8px;font-size:13px;color:var(--text-muted);text-transform:uppercase">Unlock Requests</h4>
+          <div style="margin-bottom:20px;overflow-x:auto">
+            <table style="width:100%;font-size:12px"><thead><tr><th>Reason</th><th>Contact</th><th>Status</th><th>Submitted</th><th>Reviewed By</th></tr></thead><tbody>${unlockRows}</tbody></table>
+          </div>
+        ` : ''}
 
         <h4 style="margin:0 0 8px;font-size:13px;color:var(--text-muted);text-transform:uppercase">Command History</h4>
         <div style="margin-bottom:20px;overflow-x:auto">
@@ -4415,6 +4486,57 @@ async function unenrollDevice(deviceId) {
     toast('Device unenrolled', 'success');
     closeDetailPanel();
     loadDevices();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+
+async function generateOverridePin(deviceId) {
+  const duration = prompt('PIN validity duration in minutes (5-1440):', '30');
+  if (duration === null) return;
+  const mins = parseInt(duration);
+  if (isNaN(mins) || mins < 5 || mins > 1440) {
+    toast('Duration must be between 5 and 1440 minutes', 'error');
+    return;
+  }
+  try {
+    const result = await api('POST', `/admin/api/devices/${deviceId}/generate-pin`, { duration_minutes: mins });
+    if (!result) return;
+    const pinEl = document.getElementById(`pin-result-${deviceId}`);
+    if (pinEl) {
+      pinEl.style.display = 'block';
+      pinEl.innerHTML = `
+        <div style="text-align:center">
+          <div style="font-size:11px;color:#7c3aed;text-transform:uppercase;font-weight:600;margin-bottom:8px">🔑 Override PIN Generated</div>
+          <div style="font-size:36px;font-weight:800;letter-spacing:8px;font-family:monospace;color:#7c3aed;margin-bottom:8px;user-select:all;cursor:pointer" onclick="navigator.clipboard.writeText('${result.pin}');this.style.color='#22c55e';setTimeout(()=>this.style.color='#7c3aed',1500)" title="Click to copy">${result.pin}</div>
+          <div style="font-size:12px;color:var(--text-muted)">Valid for ${result.duration_minutes} minutes · Expires ${new Date(result.expires_at).toLocaleString()}</div>
+          <div style="font-size:11px;color:#f59e0b;margin-top:6px">⚠️ Give this PIN to the customer. They enter it on the device lock screen.</div>
+          <button style="margin-top:10px;padding:6px 16px;background:#7c3aed;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:12px" onclick="navigator.clipboard.writeText('${result.pin}');toast('PIN copied!','success')">📋 Copy PIN</button>
+        </div>
+      `;
+    }
+    toast('Override PIN generated: ' + result.pin, 'success');
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function revokeOverridePin(deviceId) {
+  if (!confirm('Revoke the active override PIN?')) return;
+  try {
+    await api('POST', `/admin/api/devices/${deviceId}/revoke-pin`);
+    toast('Override PIN revoked', 'success');
+    viewDeviceDetail(deviceId);
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function reviewUnlockRequest(requestId, action, deviceId) {
+  const confirmMsg = action === 'approve'
+    ? 'Approve this unlock request? The device will be unlocked remotely.'
+    : 'Deny this unlock request?';
+  if (!confirm(confirmMsg)) return;
+  const notes = action === 'deny' ? prompt('Denial reason (optional):') : null;
+  try {
+    await api('POST', `/admin/api/unlock-requests/${requestId}/review`, { action, review_notes: notes });
+    toast(`Unlock request ${action}d`, 'success');
+    viewDeviceDetail(deviceId);
   } catch(e) { toast(e.message, 'error'); }
 }
 

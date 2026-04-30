@@ -60,7 +60,7 @@ router.get('/admin/api/devices', requireAdmin, async (req, res) => {
        WHERE ${where.join(' AND ')} ORDER BY ${orderBy}`,
       params
     );
-    res.json(r.rows);
+    res.json({ devices: r.rows });
   } catch (err) {
     logger.error({ err }, 'Device list error');
     res.status(500).json({ error: err.message });
@@ -106,7 +106,7 @@ router.get('/admin/api/devices/:id', requireAdmin, async (req, res) => {
     );
 
     res.json({
-      ...r.rows[0],
+      device: r.rows[0],
       commands: commands.rows,
       unlock_requests: unlockRequests.rows,
       audit_log: audit.rows,
@@ -265,7 +265,7 @@ router.get('/admin/api/unlock-requests', requireAdmin, async (req, res) => {
        ${whereClause} ORDER BY ur.created_at DESC`,
       params
     );
-    res.json(r.rows);
+    res.json({ requests: r.rows });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

@@ -51,10 +51,21 @@ if [ -z "$DEVICE_TOKEN" ]; then
   fi
 fi
 
+# Collect telemetry
+CPU_USAGE=$(top -bn1 2>/dev/null | grep "Cpu(s)" | awk '{print $2+$4}' || echo "")
+MEM_USAGE=$(free 2>/dev/null | awk '/Mem:/{printf("%.1f", $3/$2*100)}' || echo "")
+DISK_USAGE=$(df -h / 2>/dev/null | awk 'NR==2{gsub(/%/,""); print $5}' || echo "")
+UPTIME_VAL=$(awk '{printf "%d", $1}' /proc/uptime 2>/dev/null || echo "")
+BATTERY=""
+if command -v upower &>/dev/null; then
+  BATTERY=$(upower -i $(upower -e | grep battery | head -1) 2>/dev/null | grep percentage | awk '{gsub(/%/,""); print $2}' || echo "")
+fi
+IP_ADDR=$(hostname -I 2>/dev/null | awk '{print $1}' || echo "")
+
 # Heartbeat
 RESP=$(curl -sf -X POST "$SERVER_URL/api/agent/heartbeat" \
   -H "Content-Type: application/json" \
-  -d "{\"device_token\":\"$DEVICE_TOKEN\",\"device_uuid\":\"$DEVICE_UUID\",\"current_status\":\"online\"}" \
+  -d "{\"device_token\":\"$DEVICE_TOKEN\",\"device_uuid\":\"$DEVICE_UUID\",\"current_status\":\"online\",\"hostname\":\"$HOSTNAME_VAL\",\"os_info\":\"$OS_INFO\",\"ip_address\":\"$IP_ADDR\",\"uptime\":\"$UPTIME_VAL\",\"cpu_usage\":\"$CPU_USAGE\",\"memory_usage\":\"$MEM_USAGE\",\"disk_usage\":\"$DISK_USAGE\",\"battery\":\"$BATTERY\",\"agent_version\":\"1.1.0\"}" \
   --connect-timeout 15 --max-time 30 2>/dev/null)
 
 if [ $? -ne 0 ]; then log "Heartbeat failed (server unreachable)"; exit 0; fi

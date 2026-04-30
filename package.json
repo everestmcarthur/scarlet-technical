@@ -1,6 +1,6 @@
 {
   "name": "scarlet-technical",
-  "version": "2.1.0",
+  "version": "3.3.0",
   "description": "Scarlet Technical — Low Cost IT Support & Device Repair (Muncie, IN)",
   "main": "server.js",
   "scripts": {

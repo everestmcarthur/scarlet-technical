@@ -88,13 +88,39 @@ if (-not $DeviceToken) {
 
 # ─── Heartbeat ────────────────────────────────────────────────────────────────
 try {
+    # Collect telemetry
+    $CpuUsage = ""
+    $MemUsage = ""
+    $DiskUsage = ""
+    $BatteryLevel = ""
+    $IpAddr = ""
+    $UptimeSec = ""
+    try { $CpuUsage = [math]::Round((Get-Counter '\Processor(_Total)\% Processor Time' -SampleInterval 1 -MaxSamples 1 -ErrorAction SilentlyContinue).CounterSamples.CookedValue, 1) } catch {}
+    try {
+        $os = Get-WmiObject Win32_OperatingSystem -ErrorAction SilentlyContinue
+        if ($os) { $MemUsage = [math]::Round(($os.TotalVisibleMemorySize - $os.FreePhysicalMemory) / $os.TotalVisibleMemorySize * 100, 1) }
+    } catch {}
+    try {
+        $disk = Get-WmiObject Win32_LogicalDisk -Filter "DeviceID='C:'" -ErrorAction SilentlyContinue
+        if ($disk) { $DiskUsage = [math]::Round(($disk.Size - $disk.FreeSpace) / $disk.Size * 100, 1) }
+    } catch {}
+    try { $bat = Get-WmiObject Win32_Battery -ErrorAction SilentlyContinue; if ($bat) { $BatteryLevel = $bat.EstimatedChargeRemaining } } catch {}
+    try { $IpAddr = (Get-NetIPAddress -AddressFamily IPv4 -Type Unicast -ErrorAction SilentlyContinue | Where-Object { $_.IPAddress -ne "127.0.0.1" } | Select-Object -First 1).IPAddress } catch {}
+    try { $UptimeSec = [math]::Round((New-TimeSpan -Start (Get-WmiObject Win32_OperatingSystem).ConvertToDateTime((Get-WmiObject Win32_OperatingSystem).LastBootUpTime) -End (Get-Date)).TotalSeconds) } catch {}
+
     $HbBody = @{
         device_token = $DeviceToken
         device_uuid = $Uuid
         current_status = "online"
         hostname = $HostnameVal
         os_info = $OsInfo
-        agent_version = "1.0.0"
+        ip_address = "$IpAddr"
+        uptime = "$UptimeSec"
+        cpu_usage = "$CpuUsage"
+        memory_usage = "$MemUsage"
+        disk_usage = "$DiskUsage"
+        battery = "$BatteryLevel"
+        agent_version = "1.1.0"
     } | ConvertTo-Json
 
     $Resp = Invoke-RestMethod -Uri "$ServerUrl/api/agent/heartbeat" -Method POST -Body $HbBody -ContentType "application/json" -TimeoutSec 30
